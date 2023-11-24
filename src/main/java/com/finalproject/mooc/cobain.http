@@ -1,0 +1,3 @@
+GET http://localhost:8080/course?page=1&categories=PRODUCT_MANAGEMENT,WEB_DEVELOPMENT&username=testUser
+
+
