@@ -71,7 +71,11 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CoursePaginationResponse showCourse(Integer page, String username) {
-        return null;
+        page -= 1;
+        Pageable halaman = PageRequest.of(page, 3);
+        Page<Course> coursePage = courseRepository.findAll(halaman);
+
+        return toCoursePaginationResponse(coursePage);
     }
 
     @Transactional(readOnly = true)
@@ -91,7 +95,11 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CoursePaginationResponse showCourseBySearch(Integer page, String title, String username) {
-        return null;
+        page -= 1;
+        Pageable halaman = PageRequest.of(page, 3);
+        Page<Course> coursePage = courseRepository.searchCourse(title, halaman);
+
+        return toCoursePaginationResponse(coursePage);
     }
 
     @Override
