@@ -69,6 +69,7 @@ public class CourseServiceImpl implements CourseService {
         return toSubjectResponse(subject);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public CoursePaginationResponse showCourse(Integer page, String username) {
         page -= 1;
@@ -93,6 +94,7 @@ public class CourseServiceImpl implements CourseService {
         return toCoursePaginationResponse(coursePage);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public CoursePaginationResponse showCourseBySearch(Integer page, String title, String username) {
         page -= 1;
