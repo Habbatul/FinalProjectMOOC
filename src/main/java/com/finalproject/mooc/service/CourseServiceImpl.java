@@ -11,6 +11,7 @@ import com.finalproject.mooc.model.responses.CourseResponseWithSubject;
 import com.finalproject.mooc.model.responses.SubjectResponse;
 import com.finalproject.mooc.repository.CourseRepository;
 import com.finalproject.mooc.repository.SubjectRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class CourseServiceImpl implements CourseService {
     @Autowired
@@ -77,6 +79,7 @@ public class CourseServiceImpl implements CourseService {
     @Transactional(readOnly = true)
     @Override
     public CoursePaginationResponse showCourseByCategory(Integer page, List<CourseCategory> categories, String username) {
+        log.info("CoursePagination bejalan");
         page -= 1; //halaman asli dari index 0
         //sementara size nya 3
         Pageable halaman = PageRequest.of(page, 3);

@@ -45,4 +45,6 @@ public class Course {
     private List<Order> orders;
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Subject> subjects;
+
+    //id_user
 }

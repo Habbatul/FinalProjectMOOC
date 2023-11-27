@@ -1,3 +1,25 @@
 GET http://localhost:8080/course?page=1&categories=PRODUCT_MANAGEMENT,WEB_DEVELOPMENT&username=testUser
 
+###
+GET http://localhost:8080/course/search?title=Java&username=testUser
+
+###
+POST http://localhost:8080/auth/signup
+Content-Type: application/json
+
+{
+    "username": "asd",
+    "email": "asdasd",
+    "role" : ["USER"],
+    "password": "string"
+}
+
+###
+POST http://localhost:8080/auth/signin
+Content-Type: application/json
+
+{
+  "username": "asd",
+  "password": "string"
+}
 
