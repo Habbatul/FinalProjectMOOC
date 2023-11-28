@@ -5,10 +5,7 @@ import com.finalproject.mooc.entity.Subject;
 import com.finalproject.mooc.enums.CourseCategory;
 import com.finalproject.mooc.model.requests.CreateCourseRequest;
 import com.finalproject.mooc.model.requests.CreateSubjectRequest;
-import com.finalproject.mooc.model.responses.CoursePaginationResponse;
-import com.finalproject.mooc.model.responses.CourseResponseNoSubject;
-import com.finalproject.mooc.model.responses.CourseResponseWithSubject;
-import com.finalproject.mooc.model.responses.SubjectResponse;
+import com.finalproject.mooc.model.responses.*;
 import com.finalproject.mooc.repository.CourseRepository;
 import com.finalproject.mooc.repository.SubjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -99,7 +97,10 @@ public class CourseServiceImpl implements CourseService {
         Course course = courseRepository.findCourseJoinSubject(courseCode)
                 .orElseThrow(()->new ResponseStatusException(HttpStatus.BAD_REQUEST, "Course Tidak Ditemukan"));
         //pakek fungsi CourseResponseWithSubject, maka keajaiban akan terjadi uehe
-        return null;
+
+        List<Subject> subjects = course.getSubjects();
+        CourseResponseWithSubject courseResponseWithSubject = toCourseResponseWithSubject(course, subjects);
+        return courseResponseWithSubject;
     }
 
 
