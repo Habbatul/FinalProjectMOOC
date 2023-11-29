@@ -21,4 +21,7 @@ public interface CourseRepository extends JpaRepository<Course, String> {
     @Query("SELECT c FROM Course c INNER JOIN c.subjects s WHERE c.idCourse like %:courseCode%")
     Optional<Course> findCourseJoinSubject(@Param("courseCode") String courseCode);
 
+    @Query("SELECT c FROM Course c WHERE LOWER(c.courseName) LIKE LOWER(CONCAT('%',:keyword, '%'))")
+    Page<Course> searchCourse(@Param("keyword") String keyword, Pageable pageable);
+
 }

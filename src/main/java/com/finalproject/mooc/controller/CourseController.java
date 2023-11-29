@@ -23,11 +23,12 @@ public class CourseController {
     private CourseService courseService;
 
     //sementara
-    @GetMapping("/course")
+    @GetMapping("/category-course")
     public ResponseEntity<CoursePaginationResponse> getCoursesByCategory(
             @RequestParam(required = false, defaultValue = "1") Integer page,
-            @RequestParam("categories") List<CourseCategory> categories,
-            @RequestParam("username") String username) {
+            @RequestParam(required = false) List<CourseCategory> categories,
+            @RequestParam(required = false) String username) {
+
 
         return ResponseEntity.ok(courseService.showCourseByCategory(page, categories, username));
     }
@@ -38,5 +39,20 @@ public class CourseController {
 
         return ResponseEntity.ok(courseService.showDetailCourse(courseCode));
     }
+  
+    @GetMapping("/course")
+    public ResponseEntity<CoursePaginationResponse> showCourse(
+            @RequestParam(required = false, defaultValue = "1") Integer page,
+            @RequestParam(required = false) String username ){
 
+        return ResponseEntity.ok(courseService.showCourse(page, username));
+    }
+
+    @GetMapping("/course-search")
+    public ResponseEntity<CoursePaginationResponse> showCourseBySearch(
+            @RequestParam(required = false, defaultValue = "1") Integer page,
+            @RequestParam String title,
+            @RequestParam(required = false) String username ){
+
+        return ResponseEntity.ok(courseService.showCourseBySearch(page, title, username));
 }
