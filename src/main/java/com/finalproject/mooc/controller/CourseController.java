@@ -27,6 +27,9 @@ public class CourseController {
             @RequestParam(required = false) List<CourseCategory> categories,
             @RequestParam(required = false) String username) {
 
+        if ((categories == null || categories.isEmpty())) {
+            return ResponseEntity.ok(courseService.showCourse(page, username));
+        }
 
         return ResponseEntity.ok(courseService.showCourseByCategory(page, categories, username));
     }
@@ -44,6 +47,10 @@ public class CourseController {
             @RequestParam(required = false, defaultValue = "1") Integer page,
             @RequestParam String title,
             @RequestParam(required = false) String username ){
+
+        if ((title == null || title.isEmpty())) {
+            return ResponseEntity.ok(courseService.showCourse(page, username));
+        }
 
         return ResponseEntity.ok(courseService.showCourseBySearch(page, title, username));
     }
