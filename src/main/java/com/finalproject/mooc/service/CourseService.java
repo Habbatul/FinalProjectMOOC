@@ -1,5 +1,6 @@
 package com.finalproject.mooc.service;
 
+import com.finalproject.mooc.entity.Subject;
 import com.finalproject.mooc.enums.CourseCategory;
 import com.finalproject.mooc.model.requests.CreateCourseRequest;
 import com.finalproject.mooc.model.requests.CreateSubjectRequest;
