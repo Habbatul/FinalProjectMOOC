@@ -22,7 +22,11 @@ public class SignupRequest {
     @Email
     private String email;
 
-    private Set<String> role;
+    @NotBlank
+    private String phoneNumber;
+
+//Register hanya untuk user, sehingga ga perlu role
+//    private Set<String> role;
 
     @NotBlank
     @Size(min = 6, max = 20)

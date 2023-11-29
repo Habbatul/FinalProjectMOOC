@@ -22,12 +22,22 @@ public class User{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long userId;
+
+    @Column(unique = true)
     private String emailAddress;
+
+    @Column(unique = true)
     private String username;
+
     private String password;
-    private Integer phoneNumber;
+    private String phoneNumber;
     private String city;
     private String country;
+
+    private String urlPhoto;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<Course> course;
 
     //relasi cascade
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)

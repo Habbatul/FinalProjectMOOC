@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @Builder
-public class CourseResponseWithSubject {
+public class CourseCreateResponse {
     private String teacher;
     private String courseCode;
     private String courseName;
@@ -23,5 +23,4 @@ public class CourseResponseWithSubject {
     private String courseAbout;
     private String courseFor;
     private String urlTele;
-    private List<SubjectResponse> subjects;
 }

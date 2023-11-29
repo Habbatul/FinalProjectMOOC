@@ -1,6 +1,7 @@
 package com.finalproject.mooc.controller;
 
 import com.finalproject.mooc.model.responses.WebResponse;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -24,5 +25,12 @@ public class ErrorController {
                         .build()
                 );
     }
-
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<WebResponse<String>> handleDataIntegrityViolation(DataIntegrityViolationException error) {
+        return ResponseEntity.badRequest()
+                .body(WebResponse.<String>builder()
+                        .error("Ada kesalahan integritas data, cek field unik")
+                        .build());
+    }
 }

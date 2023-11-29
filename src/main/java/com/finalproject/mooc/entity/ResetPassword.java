@@ -1,6 +1,5 @@
 package com.finalproject.mooc.entity;
 
-import com.finalproject.mooc.enums.TypePremium;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,29 +7,22 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "subject")
-public class Subject {
+public class ResetPassword {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    @Column(name = "subject_code")
-    private String idSubject;
-    private String title;
-    private String url;
-    private Integer chapter;
+    @Column(name = "token")
+    private String token;
+    private LocalDateTime time;
 
-    @Column(unique = true)
-    private Integer sequence;
-
-    @Enumerated(EnumType.STRING)
-    private TypePremium TypePremium;
     @ManyToOne
-    @JoinColumn(name = "course_code")
-    private Course course;
+    @JoinColumn(name = "user_id")
+    private User user;
 }

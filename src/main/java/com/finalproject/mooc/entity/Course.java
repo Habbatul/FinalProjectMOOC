@@ -40,6 +40,10 @@ public class Course {
     @Enumerated(EnumType.STRING)
     private TypePremium TypePremium;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    User user;
+
     //relasi cascade
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Order> orders;

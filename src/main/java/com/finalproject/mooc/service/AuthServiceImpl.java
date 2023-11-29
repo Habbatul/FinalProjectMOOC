@@ -26,9 +26,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -56,8 +54,11 @@ public class AuthServiceImpl implements AuthService {
     @Transactional(readOnly = true)
     @Override
     public JwtResponse authenticateUser(LoginRequest login, HttpServletResponse response) {
+        //sementara gini dulu
+        User user = userRepository.findUserByEmailAddress(login.getEmailAddress()).orElseThrow(()->new ResponseStatusException(HttpStatus.BAD_REQUEST, "User dengan email tidak ditemukan"));
+
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(login.getUsername(), login.getPassword())
+                new UsernamePasswordAuthenticationToken(user.getUsername(), login.getPassword())
         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -67,15 +68,6 @@ public class AuthServiceImpl implements AuthService {
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
-
-        //set cookies ke browser
-        Cookie cookie = new Cookie("token", jwt);
-        cookie.setHttpOnly(true);
-        cookie.setMaxAge((int) TimeUnit.MILLISECONDS.toSeconds(jwtExpirationMs));
-        //atur domain yang diinginkan
-        cookie.setDomain("localhost");
-        cookie.setPath("/");
-        response.addCookie(cookie);
 
         return new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(),
                 userDetails.getEmail(), roles);
@@ -94,30 +86,46 @@ public class AuthServiceImpl implements AuthService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email telah ada");
         }
 
+        Boolean phoneExist = userRepository.existsByPhoneNumber(signupRequest.getPhoneNumber());
+        if(Boolean.TRUE.equals(phoneExist)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nomor telepon telah ada");
+        }
+
         User user = User.builder().username(signupRequest.getUsername()).
                 emailAddress(signupRequest.getEmail()).
                 password(passwordEncoder.encode(signupRequest.getPassword())).
+                phoneNumber(signupRequest.getPhoneNumber()).
+//                roles(new HashSet<>(Collections.singletonList(Roles.builder().roleName(ERole.USER).build()))).
                 build();
 
-        Set<String> strRoles = signupRequest.getRole();
-        Set<Roles> roles = new HashSet<>();
 
-        try {
-            if (strRoles == null) {
-                Roles role = roleRepository.findByRoleName(ERole.USER)
-                        .orElseThrow(() -> new RuntimeException("Error: Role is not found"));
-                roles.add(role);
-            } else {
-                strRoles.forEach(role -> {
-                    Roles roles1 = roleRepository.findByRoleName(ERole.valueOf(role))
-                            .orElseThrow(() -> new RuntimeException("Error: Role " + role + " is not found"));
-                    roles.add(roles1);
-                });
-            }
-            user.setRoles(roles);
-        } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ada kesalahan pada Role");
-        }
+        //pakai ini untuk deafult Role User
+        Set<Roles> roles = new HashSet<>();
+        Roles role = roleRepository.findByRoleName(ERole.USER)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, " Role is not found"));
+        roles.add(role);
+        user.setRoles(roles);
+
+//        Set<String> strRoles = signupRequest.getRole();
+//        Set<Roles> roles = new HashSet<>();
+//
+//        try {
+//            if (strRoles == null) {
+//                Roles role = roleRepository.findByRoleName(ERole.USER)
+//                        .orElseThrow(() -> new RuntimeException("Error: Role is not found"));
+//                roles.add(role);
+//            } else {
+//                strRoles.forEach(role -> {
+//                    Roles roles1 = roleRepository.findByRoleName(ERole.valueOf(role))
+//                            .orElseThrow(() -> new RuntimeException("Error: Role " + role + " is not found"));
+//                    roles.add(roles1);
+//                });
+//            }
+//
+//            user.setRoles(roles);
+//        } catch (IllegalArgumentException e) {
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ada kesalahan pada Role");
+//        }
 
         userRepository.save(user);
 

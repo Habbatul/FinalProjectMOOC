@@ -2,12 +2,16 @@ package com.finalproject.mooc.service;
 
 import com.finalproject.mooc.entity.Course;
 import com.finalproject.mooc.entity.Subject;
+import com.finalproject.mooc.entity.User;
 import com.finalproject.mooc.enums.CourseCategory;
+import com.finalproject.mooc.enums.CourseLevel;
+import com.finalproject.mooc.enums.TypePremium;
 import com.finalproject.mooc.model.requests.CreateCourseRequest;
 import com.finalproject.mooc.model.requests.CreateSubjectRequest;
 import com.finalproject.mooc.model.responses.*;
 import com.finalproject.mooc.repository.CourseRepository;
 import com.finalproject.mooc.repository.SubjectRepository;
+import com.finalproject.mooc.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,8 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -30,39 +35,44 @@ public class CourseServiceImpl implements CourseService {
     CourseRepository courseRepository;
     @Autowired
     SubjectRepository subjectRepository;
-
+    @Autowired
+    UserRepository userRepository;
 
     //sementara create course sama subject dipisahkan, menunggu info dari FE
+    @Transactional
     @Override
-    public CourseResponseNoSubject createCourse(CreateCourseRequest courseRequest, String username) {
+    public CourseCreateResponse createCourse(CreateCourseRequest courseRequest, String username) {
+
+        User user = userRepository.findUserByUsername(username).orElseThrow(()->
+                new ResponseStatusException(HttpStatus.BAD_REQUEST, "username tidak ditemukan"));
+
         Course course = Course.builder()
-                .courseName(courseRequest.getCourseFor())
+                .courseName(courseRequest.getCourseName())
                 .courseCategory(courseRequest.getCourseCategory())
-                .idCourse(courseRequest.getCourseCode())
                 .TypePremium(courseRequest.getTypePremium())
                 .courseLevel(courseRequest.getCourseLevel())
                 .coursePrice(courseRequest.getCoursePrice())
                 .courseAbout(courseRequest.getCourseAbout())
                 .courseFor(courseRequest.getCourseFor())
                 .urlTele(courseRequest.getUrlTele())
+                .user(user)
                 .build();
 
         courseRepository.save(course);
-        return toCourseResponseNoSubject(course);
+        return toCourseCreateResponse(course);
     }
 
+    @Transactional
     @Override
     public SubjectResponse createSubject(CreateSubjectRequest subjectRequest, String username, String courseCode) {
         Subject subject = Subject.builder()
-                .idSubject(subjectRequest.getSubjectCode())
                 .title(subjectRequest.getTitle())
                 .url(subjectRequest.getUrl())
                 .chapter(subjectRequest.getChapter())
                 .sequence(subjectRequest.getSequence())
                 .TypePremium(subjectRequest.getTypePremium())
                 .course(courseRepository.findById(courseCode)
-                        .orElseThrow(()->
-                                new ResponseStatusException(HttpStatus.BAD_REQUEST, "Course Tidak Ditemukan")))
+                        .orElseThrow(()-> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Course Tidak Ditemukan")))
                 .build();
 
         subjectRepository.save(subject);
@@ -81,12 +91,16 @@ public class CourseServiceImpl implements CourseService {
 
     @Transactional(readOnly = true)
     @Override
-    public CoursePaginationResponse showCourseByCategory(Integer page, List<CourseCategory> categories, String username) {
+    public CoursePaginationResponse showCourseByCategoryOrLevelOrPremiumAndSearch(Integer page, List<CourseCategory> categories,
+                                                                                  List<CourseLevel> courseLevel,
+                                                                                  List<TypePremium> typePremium,
+                                                                                  String keyword, String username) {
+
         log.info("CoursePagination bejalan");
         page -= 1; //halaman asli dari index 0
         //sementara size nya 3
         Pageable halaman = PageRequest.of(page, 3);
-        Page<Course> coursePage = courseRepository.findCourseByCategory(categories, halaman)
+        Page<Course> coursePage = courseRepository.findCourseByCategoryAndLevel(categories, courseLevel, typePremium, keyword, halaman)
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.BAD_REQUEST,"Data tidak ditemukan"));
 
         if (coursePage.getContent().isEmpty())
@@ -95,16 +109,19 @@ public class CourseServiceImpl implements CourseService {
         return toCoursePaginationResponse(coursePage);
     }
 
+
     @Transactional(readOnly = true)
     @Override
     public CoursePaginationResponse showCourseBySearch(Integer page, String title, String username) {
         page -= 1;
         Pageable halaman = PageRequest.of(page, 3);
-        Page<Course> coursePage = courseRepository.searchCourse(title, halaman);
+        Page<Course> coursePage = courseRepository.searchCourse(title, halaman)
+                .orElseThrow(()-> new ResponseStatusException(HttpStatus.BAD_REQUEST,"Data tidak ditemukan"));
 
         return toCoursePaginationResponse(coursePage);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public CourseResponseWithSubject showDetailCourse(String courseCode) {
         Course course = courseRepository.findCourseJoinSubject(courseCode)
@@ -112,11 +129,11 @@ public class CourseServiceImpl implements CourseService {
         //pakek fungsi CourseResponseWithSubject, maka keajaiban akan terjadi uehe
 
         List<Subject> subjects = course.getSubjects();
-        CourseResponseWithSubject courseResponseWithSubject = toCourseResponseWithSubject(course, subjects);
-        return courseResponseWithSubject;
+        return toCourseResponseWithSubject(course, subjects);
     }
 
 
+    //semua helper ada dibawah ini
     private SubjectResponse toSubjectResponse(Subject subject) {
         return SubjectResponse.builder()
                 .subjectCode(subject.getIdSubject())
@@ -132,10 +149,12 @@ public class CourseServiceImpl implements CourseService {
     private CourseResponseWithSubject toCourseResponseWithSubject(Course course, List<Subject> subjects) {
         //mapping course nya pakek fungsi konversi ke subjectResponse
         List<SubjectResponse> subjectResponseList = subjects.stream()
+                .sorted(Comparator.comparingInt(Subject::getSequence)) //sorted berdasarkan sequence subject/module
                 .map(this::toSubjectResponse)
                 .collect(Collectors.toList());
 
         return CourseResponseWithSubject.builder()
+                .teacher(course.getUser().getUsername())
                 .courseCode(course.getIdCourse())
                 .courseName(course.getCourseName())
                 .courseCategory(course.getCourseCategory())
@@ -160,6 +179,8 @@ public class CourseServiceImpl implements CourseService {
                 .courseFor(course.getCourseFor())
                 .courseLevel(course.getCourseLevel())
                 .urlTele(course.getUrlTele())
+                .numberOfModule(courseRepository.findTotalModule(course.getIdCourse()))
+                .teacher(course.getUser().getUsername())
                 .build();
     }
 
@@ -167,6 +188,7 @@ public class CourseServiceImpl implements CourseService {
         List<Course> courseResponses = coursePage.getContent();
 
         //mapping course nya pakek fungsi konversi ke courseResponse
+        //toCourseResponseNoSubject (course, totalModul)
         List<CourseResponseNoSubject> courseResponseNoSubjectList = courseResponses.stream()
                 .map(this::toCourseResponseNoSubject)
                 .collect(Collectors.toList());
@@ -175,6 +197,21 @@ public class CourseServiceImpl implements CourseService {
                 .courseResponseNoSubject(courseResponseNoSubjectList)
                 .productCurrentPage(coursePage.getNumber() + 1)
                 .productTotalPage(coursePage.getTotalPages())
+                .build();
+    }
+
+    private CourseCreateResponse toCourseCreateResponse(Course course) {
+        return CourseCreateResponse.builder()
+                .courseCode(course.getIdCourse())
+                .courseName(course.getCourseName())
+                .courseCategory(course.getCourseCategory())
+                .TypePremium(course.getTypePremium())
+                .coursePrice(course.getCoursePrice())
+                .courseAbout(course.getCourseAbout())
+                .courseFor(course.getCourseFor())
+                .courseLevel(course.getCourseLevel())
+                .urlTele(course.getUrlTele())
+                .teacher(course.getUser().getUsername())
                 .build();
     }
 

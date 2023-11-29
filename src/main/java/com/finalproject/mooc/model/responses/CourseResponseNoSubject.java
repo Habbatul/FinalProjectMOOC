@@ -20,4 +20,6 @@ public class CourseResponseNoSubject {
     private String courseAbout;
     private String courseFor;
     private String urlTele;
+    private String teacher;
+    private Integer numberOfModule;
 }

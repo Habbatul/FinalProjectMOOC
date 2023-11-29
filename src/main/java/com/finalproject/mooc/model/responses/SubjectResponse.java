@@ -12,7 +12,7 @@ public class SubjectResponse {
     private String subjectCode;
     private String title;
     private String url;
-    private String chapter;
-    private String sequence;
+    private Integer chapter;
+    private Integer sequence;
     private TypePremium TypePremium;
 }

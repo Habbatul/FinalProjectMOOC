@@ -8,9 +8,8 @@ POST http://localhost:8080/auth/signup
 Content-Type: application/json
 
 {
-    "username": "asd",
-    "email": "asdasd",
-    "role" : ["USER"],
+    "username": "Dimas Suwono",
+    "email": "DimasSuwono@Makanan.com",
     "password": "string"
 }
 
@@ -19,7 +18,7 @@ POST http://localhost:8080/auth/signin
 Content-Type: application/json
 
 {
-  "username": "asd",
+  "username": "Dimas Suwono",
   "password": "string"
 }
 
