@@ -48,6 +48,8 @@ public class OrderServiceImpl implements OrderService{
 
     @Override
     public OrderStatusResponse orderCourse(String username, CreateOrderRequest orderRequest) {
+        if(orderRepository.findUserOrderExist(username, orderRequest.getCourseCode()))
+            throw  new ResponseStatusException(HttpStatus.BAD_REQUEST, "Anda sudah order course ini sebelumnya");
 
         Order order = Order.builder()
                 .orderDate(LocalDateTime.now().truncatedTo(ChronoUnit.MICROS))
