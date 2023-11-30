@@ -13,7 +13,7 @@ public interface CourseService {
     CourseCreateResponse createCourse(CreateCourseRequest courseRequest, String username);
     SubjectResponse createSubject(CreateSubjectRequest createSubjectRequest, String username, String courseCode);
     CoursePaginationResponse showCourseByCategoryOrLevelOrPremiumAndSearch(Integer page, List<CourseCategory> category, List<CourseLevel> courseLevel, List<TypePremium> typePremium, String keyword, String username);
-    CourseResponseWithSubject showDetailCourse(String courseCode);
+    CourseResponseWithSubject showDetailCourse(String courseCode, String username);
 
 //    CoursePaginationResponse showCourse(Integer page, String username);
 //    CoursePaginationResponse showCourseBySearch(Integer page, String title, String username);

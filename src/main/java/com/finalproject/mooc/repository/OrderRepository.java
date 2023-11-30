@@ -9,4 +9,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 
     @Query("SELECT COUNT(o) > 0 FROM Order o WHERE o.user.username = :username AND o.course.idCourse = :courseCode")
     Boolean findUserOrderExist(@Param("username") String username, @Param("courseCode") String courseCode);
+
+    @Query("SELECT COUNT(o) > 0 FROM Order o WHERE o.user.username = :username AND o.course.idCourse = :courseCode AND o.paid = 'SUDAH_DIBAYAR'")
+    Boolean findIsPremiumPaid(@Param("username") String username, @Param("courseCode") String courseCode);
 }

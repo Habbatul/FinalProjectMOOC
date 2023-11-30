@@ -1,5 +1,6 @@
 package com.finalproject.mooc.entity;
 
 public class UserCourse {
-    //course yang dijalankan user
+    //course yang diambil user
+
 }

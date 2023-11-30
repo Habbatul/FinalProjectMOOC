@@ -5,11 +5,13 @@ import com.finalproject.mooc.entity.Subject;
 import com.finalproject.mooc.entity.User;
 import com.finalproject.mooc.enums.CourseCategory;
 import com.finalproject.mooc.enums.CourseLevel;
+import com.finalproject.mooc.enums.ERole;
 import com.finalproject.mooc.enums.TypePremium;
 import com.finalproject.mooc.model.requests.CreateCourseRequest;
 import com.finalproject.mooc.model.requests.CreateSubjectRequest;
 import com.finalproject.mooc.model.responses.*;
 import com.finalproject.mooc.repository.CourseRepository;
+import com.finalproject.mooc.repository.OrderRepository;
 import com.finalproject.mooc.repository.SubjectRepository;
 import com.finalproject.mooc.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -22,10 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -37,6 +36,8 @@ public class CourseServiceImpl implements CourseService {
     SubjectRepository subjectRepository;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    OrderRepository orderRepository;
 
     //sementara create course sama subject dipisahkan, menunggu info dari FE
     @Transactional
@@ -101,13 +102,17 @@ public class CourseServiceImpl implements CourseService {
 
     @Transactional(readOnly = true)
     @Override
-    public CourseResponseWithSubject showDetailCourse(String courseCode) {
+    public CourseResponseWithSubject showDetailCourse(String courseCode, String username) {
         Course course = courseRepository.findCourseJoinSubject(courseCode)
                 .orElseThrow(()->new ResponseStatusException(HttpStatus.BAD_REQUEST, "Course Tidak Ditemukan"));
         //pakek fungsi CourseResponseWithSubject, maka keajaiban akan terjadi uehe
 
         List<Subject> subjects = course.getSubjects();
-        return toCourseResponseWithSubject(course, subjects);
+
+        return toCourseResponseWithSubject(course, subjects,
+                userRepository.findRoleNamesByUsername(username).orElseThrow(()->
+                        new ResponseStatusException(HttpStatus.BAD_REQUEST, "Anda belum login")),
+                username);
     }
 
 
@@ -123,14 +128,61 @@ public class CourseServiceImpl implements CourseService {
                 .build();
     }
 
+    //pembatasan untuk limit url modul bila user belum membeli course premium
+    private SubjectResponse toSubjectResponseLimitUrl(Subject subject, String courseCode, String username) {
+        //cek apakah tipe module premium
+        if(subject.getTypePremium().equals(TypePremium.PREMIUM)){
+            //cek apakah sudah membayar
+            if(orderRepository.findIsPremiumPaid(username, courseCode))
+                return SubjectResponse.builder()
+                        .subjectCode(subject.getIdSubject())
+                        .title(subject.getTitle())
+                        .url(subject.getUrl())
+                        .chapter(subject.getChapter())
+                        .sequence(subject.getSequence())
+                        .TypePremium(subject.getTypePremium())
+                        .build();
+            else
+                return SubjectResponse.builder()
+                        .subjectCode(subject.getIdSubject())
+                        .title(subject.getTitle())
+                        .url("ANDA BELUM MEMBELI KELAS INI (Beri Url untuk redirect ke video dibatasi)")
+                        .chapter(subject.getChapter())
+                        .sequence(subject.getSequence())
+                        .TypePremium(subject.getTypePremium())
+                        .build();
+        } else{
+            return SubjectResponse.builder()
+                    .subjectCode(subject.getIdSubject())
+                    .title(subject.getTitle())
+                    .url(subject.getUrl())
+                    .chapter(subject.getChapter())
+                    .sequence(subject.getSequence())
+                    .TypePremium(subject.getTypePremium())
+                    .build();
+        }
+    }
 
-    private CourseResponseWithSubject toCourseResponseWithSubject(Course course, List<Subject> subjects) {
+
+    private CourseResponseWithSubject toCourseResponseWithSubject(Course course, List<Subject> subjects, Set<ERole> role, String username) {
+        List<SubjectResponse> subjectResponseList = new ArrayList<>();
+
+        //jika role admin ijinkan lihat semua
+        if(role.contains(ERole.ADMIN)){
+            subjectResponseList = subjects.stream()
+                    .sorted(Comparator.comparingInt(Subject::getSequence)) //sorted berdasarkan sequence subject/module
+                    .map(this::toSubjectResponse)
+                    .collect(Collectors.toList());
+        }
+        //jika role bukan admin cek apakah sudah order
+        else{
+            subjectResponseList = subjects.stream()
+                    .sorted(Comparator.comparingInt(Subject::getSequence)) //sorted berdasarkan sequence subject/module
+                    .map(subject -> toSubjectResponseLimitUrl(subject, course.getIdCourse(),username))
+                    .collect(Collectors.toList());
+        }
+
         //mapping course nya pakek fungsi konversi ke subjectResponse
-        List<SubjectResponse> subjectResponseList = subjects.stream()
-                .sorted(Comparator.comparingInt(Subject::getSequence)) //sorted berdasarkan sequence subject/module
-                .map(this::toSubjectResponse)
-                .collect(Collectors.toList());
-
         return CourseResponseWithSubject.builder()
                 .teacher(course.getUser().getUsername())
                 .courseCode(course.getIdCourse())
