@@ -123,7 +123,7 @@ public class UserServiceImpl implements UserService{
         ResetPassword token = ResetPassword.builder()
                 .time(LocalDateTime.now().truncatedTo(ChronoUnit.MICROS))
                 .user(userRepository.findUserByEmailAddress(emailAddress).orElseThrow(
-                        ()-> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username tidak ditemukan")))
+                        ()-> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email tidak ditemukan")))
                 .build();
         resetPasswordRepository.save(token);
 
@@ -136,6 +136,7 @@ public class UserServiceImpl implements UserService{
     @Transactional(readOnly = true)
     @Override
     public UserResponse showUserByUsername(String username) {
+        log.info("showUserByUsername, String username = {}", username);
         User user = userRepository.findUserByUsername(username).orElseThrow(()->
                 new ResponseStatusException(HttpStatus.BAD_REQUEST, "User tidak ditemukan"));
 

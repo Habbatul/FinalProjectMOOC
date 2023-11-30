@@ -11,8 +11,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 
@@ -56,7 +58,10 @@ public class CourseController {
     @PostMapping("course/")
     public ResponseEntity<WebResponse<CourseCreateResponse>> createCourse(
             @RequestBody CreateCourseRequest courseRequest,
-            @RequestParam String username) {
+            HttpServletRequest request) {
+
+        //ambil nama dari Authorization Bearer
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
         return ResponseEntity.ok(WebResponse.<CourseCreateResponse>builder()
                 .data(courseService.createCourse(courseRequest, username))
@@ -69,7 +74,9 @@ public class CourseController {
     public ResponseEntity<WebResponse<SubjectResponse>> createModule(
             @RequestBody CreateSubjectRequest createSubjectRequest,
             @RequestHeader String courseCode,
-            @RequestParam String username) {
+            HttpServletRequest request) {
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
         return ResponseEntity.ok(WebResponse.<SubjectResponse>builder()
                 .data(courseService.createSubject(createSubjectRequest, username, courseCode))

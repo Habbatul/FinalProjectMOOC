@@ -22,3 +22,8 @@ Content-Type: application/json
   "password": "string"
 }
 
+
+###
+GET http://localhost:8080/user
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJyb2dlciIsImlhdCI6MTcwMTM2NjYyNiwiZXhwIjoxNzAxMzg0NjI2fQ.APl7ncSdh_E9k_6NZ8EcNwiOhnqClarawYVlsN_C1imlV-zHjrkgW8VpMUk_mmgUKeVeCO0mN-2vYn1LCj_gqQ

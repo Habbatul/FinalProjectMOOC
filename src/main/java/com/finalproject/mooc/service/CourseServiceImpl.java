@@ -81,16 +81,6 @@ public class CourseServiceImpl implements CourseService {
 
     @Transactional(readOnly = true)
     @Override
-    public CoursePaginationResponse showCourse(Integer page, String username) {
-        page -= 1;
-        Pageable halaman = PageRequest.of(page, 3);
-        Page<Course> coursePage = courseRepository.findAll(halaman);
-
-        return toCoursePaginationResponse(coursePage);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
     public CoursePaginationResponse showCourseByCategoryOrLevelOrPremiumAndSearch(Integer page, List<CourseCategory> categories,
                                                                                   List<CourseLevel> courseLevel,
                                                                                   List<TypePremium> typePremium,
@@ -105,18 +95,6 @@ public class CourseServiceImpl implements CourseService {
 
         if (coursePage.getContent().isEmpty())
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Data tidak ditemukan");
-
-        return toCoursePaginationResponse(coursePage);
-    }
-
-
-    @Transactional(readOnly = true)
-    @Override
-    public CoursePaginationResponse showCourseBySearch(Integer page, String title, String username) {
-        page -= 1;
-        Pageable halaman = PageRequest.of(page, 3);
-        Page<Course> coursePage = courseRepository.searchCourse(title, halaman)
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.BAD_REQUEST,"Data tidak ditemukan"));
 
         return toCoursePaginationResponse(coursePage);
     }
@@ -214,16 +192,39 @@ public class CourseServiceImpl implements CourseService {
                 .teacher(course.getUser().getUsername())
                 .build();
     }
-
-    /**
-     * Funsgi ini ternyata gabisa untuk pagination, karena harus showAll
-     */
-    private List<Course> getUniqueFromJoinResult(List<Course> courses) {
-        return new ArrayList<>(courses.stream()
-                // Membuat perulangan hanya sekali bila id sama
-                .collect(Collectors.toMap(Course::getIdCourse, course -> course,
-                        (existing, replacement) -> existing))
-                .values());
-    }
-
 }
+
+//    /**
+//     * Funsgi ini ternyata gabisa untuk pagination, karena harus showAll
+//     */
+//    private List<Course> getUniqueFromJoinResult(List<Course> courses) {
+//        return new ArrayList<>(courses.stream()
+//                // Membuat perulangan hanya sekali bila id sama
+//                .collect(Collectors.toMap(Course::getIdCourse, course -> course,
+//                        (existing, replacement) -> existing))
+//                .values());
+//    }
+
+//    @Transactional(readOnly = true)
+//    @Override
+//    public CoursePaginationResponse showCourse(Integer page, String username) {
+//        page -= 1;
+//        Pageable halaman = PageRequest.of(page, 3);
+//        Page<Course> coursePage = courseRepository.findAll(halaman);
+//
+//        return toCoursePaginationResponse(coursePage);
+//    }
+
+//
+//    @Transactional(readOnly = true)
+//    @Override
+//    public CoursePaginationResponse showCourseBySearch(Integer page, String title, String username) {
+//        page -= 1;
+//        Pageable halaman = PageRequest.of(page, 3);
+//        Page<Course> coursePage = courseRepository.searchCourse(title, halaman)
+//                .orElseThrow(()-> new ResponseStatusException(HttpStatus.BAD_REQUEST,"Data tidak ditemukan"));
+//
+//        return toCoursePaginationResponse(coursePage);
+//    }
+
+

@@ -133,5 +133,41 @@ public class AuthServiceImpl implements AuthService {
                 .data("User registered successfully")
                 .build();
     }
+
+    @Override
+    public WebResponse<String> registerAdmin(SignupRequest signupRequest) {
+        Boolean usernameExist = userRepository.existsByUsername(signupRequest.getUsername());
+        if(Boolean.TRUE.equals(usernameExist)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username telah ada");
+        }
+
+        Boolean emailExist = userRepository.existsByEmailAddress(signupRequest.getEmail());
+        if(Boolean.TRUE.equals(emailExist)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email telah ada");
+        }
+
+        Boolean phoneExist = userRepository.existsByPhoneNumber(signupRequest.getPhoneNumber());
+        if(Boolean.TRUE.equals(phoneExist)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nomor telepon telah ada");
+        }
+
+        User user = User.builder().username(signupRequest.getUsername()).
+                emailAddress(signupRequest.getEmail()).
+                password(passwordEncoder.encode(signupRequest.getPassword())).
+                phoneNumber(signupRequest.getPhoneNumber()).
+        build();
+
+        Set<Roles> roles = new HashSet<>();
+        Roles role = roleRepository.findByRoleName(ERole.ADMIN)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, " Role is not found"));
+        roles.add(role);
+        user.setRoles(roles);
+
+        userRepository.save(user);
+
+        return WebResponse.<String>builder()
+                .data("Admin registered successfully")
+                .build();
+    }
 }
 

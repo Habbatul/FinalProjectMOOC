@@ -10,9 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 @RestController
@@ -23,7 +25,8 @@ public class UserController {
 
     @Operation(summary = "Menampilkan data user yang sedang login")
     @GetMapping("/user")
-    public ResponseEntity<WebResponse<UserResponse>> resetPassword(@RequestHeader String username) {
+    public ResponseEntity<WebResponse<UserResponse>> resetPassword() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return ResponseEntity.ok(WebResponse.<UserResponse>builder().data(userService.showUserByUsername(username)).build());
     }
 
@@ -33,10 +36,11 @@ public class UserController {
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
     public ResponseEntity<WebResponse<String>> updateProfile(
-            @RequestHeader String username,
+            HttpServletRequest request,
             @ModelAttribute UpdateUserRequest userRequest,
             BindingResult result) {
         try {
+            String username = SecurityContextHolder.getContext().getAuthentication().getName();
             userService.updateProfile(username, userRequest);
             return ResponseEntity.ok(WebResponse.<String>builder().data("Profile berhasil diUpdate").build());
         } catch (IOException e) {
@@ -47,10 +51,11 @@ public class UserController {
     @Operation(summary = "Mengupdate password user untuk user yang sedang login")
     @PutMapping(value = "user/password",
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<WebResponse<String>> updatePassword(
-            @RequestHeader String username,
-            @RequestBody UpdateUserPassword passwordReq
-            ){
+    public ResponseEntity<WebResponse<String>> updatePassword(HttpServletRequest request,
+                                                              @RequestBody UpdateUserPassword passwordReq){
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
         userService.updatePassword(username, passwordReq);
         return  ResponseEntity.ok(WebResponse.<String>builder().data("Sukses mengubah password").build());
     }

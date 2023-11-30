@@ -36,4 +36,10 @@ public class AuthController {
     public ResponseEntity<WebResponse<String>> registerUser(@Valid @RequestBody SignupRequest signupRequest) {
         return ResponseEntity.ok().body(authService.registerUser(signupRequest));
     }
+
+    @Operation(summary = "Menambahkan Admin/Teacher")
+    @PostMapping("/signup/admin")
+    public ResponseEntity<WebResponse<String>> registerAdmin(@Valid @RequestBody SignupRequest signupRequest) {
+        return ResponseEntity.ok().body(authService.registerAdmin(signupRequest));
+    }
 }

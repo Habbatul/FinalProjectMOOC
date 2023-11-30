@@ -8,16 +8,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @AllArgsConstructor
 @Builder
 public class OrderStatusResponse {
-    private PaidStatus paidStatus;
-    private String courseCode;
-    private String courseName;
-    private String teacherName;
-    private Integer modulCount;
+    private String buyerName;
     private CourseCategory courseCategory;
-    private CourseLevel courseLevel;
-    private Double price;
+    private String coursePremiumName;
+    private PaidStatus paidStatus;
+    private String buyMethod;
+    private LocalDateTime buyDate;
 }

@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Builder
 @Data
@@ -19,7 +20,9 @@ public class Order {
     @Column(name = "order_id")
     private Integer idOrder;
 
-    private Integer orderTotal;
+    private String orderMethod;
+
+    private LocalDateTime orderDate;
 
     @Enumerated(EnumType.STRING)
     private PaidStatus paid;
