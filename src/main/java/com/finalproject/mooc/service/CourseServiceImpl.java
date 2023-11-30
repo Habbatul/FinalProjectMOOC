@@ -132,8 +132,10 @@ public class CourseServiceImpl implements CourseService {
     private SubjectResponse toSubjectResponseLimitUrl(Subject subject, String courseCode, String username) {
         //cek apakah tipe module premium
         if(subject.getTypePremium().equals(TypePremium.PREMIUM)){
+            log.info("Module ini PREMIUM");
             //cek apakah sudah membayar
-            if(orderRepository.findIsPremiumPaid(username, courseCode))
+            if(orderRepository.findIsPremiumPaid(username, courseCode)){
+                log.info("User ini sudah membayar");
                 return SubjectResponse.builder()
                         .subjectCode(subject.getIdSubject())
                         .title(subject.getTitle())
@@ -142,7 +144,9 @@ public class CourseServiceImpl implements CourseService {
                         .sequence(subject.getSequence())
                         .TypePremium(subject.getTypePremium())
                         .build();
-            else
+            }
+            else{
+                log.info("User ini belum membayar");
                 return SubjectResponse.builder()
                         .subjectCode(subject.getIdSubject())
                         .title(subject.getTitle())
@@ -151,7 +155,10 @@ public class CourseServiceImpl implements CourseService {
                         .sequence(subject.getSequence())
                         .TypePremium(subject.getTypePremium())
                         .build();
+            }
+
         } else{
+            log.info("Module ini tidak PREMIUM");
             return SubjectResponse.builder()
                     .subjectCode(subject.getIdSubject())
                     .title(subject.getTitle())

@@ -6,6 +6,7 @@ import com.finalproject.mooc.model.responses.WebResponse;
 import com.finalproject.mooc.service.CourseService;
 import com.finalproject.mooc.service.OrderService;
 import com.finalproject.mooc.service.media.CloudinaryService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,6 +23,7 @@ public class OrderController {
     @Autowired
     OrderService orderService;
 
+    @Operation(summary = "Untuk menambahkan data order (paidStatus awal adalah BELUM_BAYAR")
     @PostMapping("/order")
     public ResponseEntity<WebResponse<OrderStatusResponse>> orderCourse(@RequestBody CreateOrderRequest orderRequest){
         String username = SecurityContextHolder.getContext().getAuthentication().getName();

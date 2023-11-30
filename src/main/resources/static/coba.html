@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Password</title>
+</head>
+<body>
+<form id="resetPasswordForm">
+    <input type="hidden" id="resetToken" name="resetToken">
+    <label for="newPassword">New Password:</label>
+    <input type="password" id="newPassword" name="newPassword" required>
+    <br>
+    <label for="newRePassword">Confirm New Password:</label>
+    <input type="password" id="newRePassword" name="newRePassword" required>
+    <br>
+    <button type="button" id="resetPasswordButton">Reset Password</button>
+</form>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const resetToken = urlParams.get('resetToken');
+    if (resetToken) {
+        document.getElementById('resetToken').value = resetToken;
+    }
+
+    document.getElementById('resetPasswordButton').addEventListener('click', function () {
+        const newResetToken = document.getElementById('resetToken').value;
+        const newPassword = document.getElementById('newPassword').value;
+        const newRePassword = document.getElementById('newRePassword').value;
+
+        //url backend nya belum ada
+        fetch('http://localhost:8080/forget-password/reset', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                resetToken: newResetToken,
+                newPassword: newPassword,
+                newRePassword: newRePassword
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+            })
+            .catch(error => console.error('Error:', error));
+    });
+</script>
+</body>
+</html>

@@ -88,16 +88,38 @@ public class UserServiceImpl implements UserService{
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "RePassword tidak cocok");
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public UserResponse showUserByUsername(String username) {
+        log.info("showUserByUsername, String username = {}", username);
+        User user = userRepository.findUserByUsername(username).orElseThrow(()->
+                new ResponseStatusException(HttpStatus.BAD_REQUEST, "User tidak ditemukan"));
+
+        return toUserResponse(user);
+    }
+
+    private UserResponse toUserResponse(User user){
+        return UserResponse.builder()
+                .imageUrl(user.getUrlPhoto())
+                .username(user.getUsername())
+                .phoneNumber(user.getPhoneNumber())
+                .emailAddress(user.getEmailAddress())
+                .country(user.getCountry())
+                .city(user.getCity())
+                .build();
+    }
+
+    //bagian dibawah ini untuk reset password
     @Transactional
     @Override
-    public void resetPassword(String resetToken, ResetPasswordRequest passwordRequest) {
-        ResetPassword findToken = resetPasswordRepository.findToken(resetToken).orElseThrow(()->
+    public void resetPassword(ResetPasswordRequest passwordRequest) {
+        ResetPassword findToken = resetPasswordRepository.findToken(passwordRequest.getResetToken()).orElseThrow(()->
                 new ResponseStatusException(HttpStatus.BAD_REQUEST, "Token tidak ditemukan atau sudah kadaluarsa"));
         LocalDateTime time = findToken.getTime();
         LocalDateTime now = LocalDateTime.now();
 
         //cek waktu token dengan waktu sekarang apakah kurang dari 1 menit
-        if(Duration.between(time, now).toMinutes() < 1){
+        if(Duration.between(time, now).toMinutes() < 30){
             User user = userRepository.findUserByUsername(findToken.getUser().getUsername()).orElseThrow(
                     ()-> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username tidak ditemukan"));
 
@@ -131,27 +153,6 @@ public class UserServiceImpl implements UserService{
         //example : <a href= www.example.com/forget-password/{resetToken}>Tekan disini untuk reset password</a>
 
         return token.getToken();
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public UserResponse showUserByUsername(String username) {
-        log.info("showUserByUsername, String username = {}", username);
-        User user = userRepository.findUserByUsername(username).orElseThrow(()->
-                new ResponseStatusException(HttpStatus.BAD_REQUEST, "User tidak ditemukan"));
-
-        return toUserResponse(user);
-    }
-
-    private UserResponse toUserResponse(User user){
-        return UserResponse.builder()
-                .imageUrl(user.getUrlPhoto())
-                .username(user.getUsername())
-                .phoneNumber(user.getPhoneNumber())
-                .emailAddress(user.getEmailAddress())
-                .country(user.getCountry())
-                .city(user.getCity())
-                .build();
     }
 
 }

@@ -50,7 +50,7 @@ public class CourseController {
             @RequestParam(value = "courseCode") String courseCode) {
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-
+        log.info("menjalankan courseDetail dengan username : {}", username);
         return ResponseEntity.ok(WebResponse.<CourseResponseWithSubject>builder()
                 .data(courseService.showDetailCourse(courseCode, username))
                 .build());

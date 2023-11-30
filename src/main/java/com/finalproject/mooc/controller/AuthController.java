@@ -37,7 +37,7 @@ public class AuthController {
         return ResponseEntity.ok().body(authService.registerUser(signupRequest));
     }
 
-    @Operation(summary = "Menambahkan Admin/Teacher")
+    @Operation(summary = "Menambahkan Admin/Teacher, Ini untuk tester hak akses admin")
     @PostMapping("/signup/admin")
     public ResponseEntity<WebResponse<String>> registerAdmin(@Valid @RequestBody SignupRequest signupRequest) {
         return ResponseEntity.ok().body(authService.registerAdmin(signupRequest));
