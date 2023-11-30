@@ -73,7 +73,7 @@ public class CourseController {
     @PostMapping("subject/")
     public ResponseEntity<WebResponse<SubjectResponse>> createModule(
             @RequestBody CreateSubjectRequest createSubjectRequest,
-            @RequestHeader String courseCode,
+            @RequestParam String courseCode,
             HttpServletRequest request) {
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
