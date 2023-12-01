@@ -1,5 +1,6 @@
 package com.finalproject.mooc.service;
 
+import com.finalproject.mooc.entity.RegisterOtp;
 import com.finalproject.mooc.entity.ResetPassword;
 import com.finalproject.mooc.entity.User;
 import com.finalproject.mooc.enums.ERole;
@@ -7,9 +8,12 @@ import com.finalproject.mooc.model.requests.ResetPasswordRequest;
 import com.finalproject.mooc.model.requests.UpdateUserPassword;
 import com.finalproject.mooc.model.requests.UpdateUserRequest;
 import com.finalproject.mooc.model.responses.UserResponse;
+import com.finalproject.mooc.repository.RegisterOtpRepository;
 import com.finalproject.mooc.repository.ResetPasswordRepository;
 import com.finalproject.mooc.repository.UserRepository;
 import com.finalproject.mooc.service.media.CloudinaryService;
+import com.finalproject.mooc.util.EmailUtil;
+import com.finalproject.mooc.util.OtpUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,10 +22,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.mail.MessagingException;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -39,6 +46,15 @@ public class UserServiceImpl implements UserService{
 
     @Autowired
     ResetPasswordRepository resetPasswordRepository;
+
+    @Autowired
+    private EmailUtil emailUtil;
+
+    @Autowired
+    private OtpUtil otpUtil;
+
+    @Autowired
+    private RegisterOtpRepository registerOtpRepository;
 
 
     @Transactional
@@ -96,6 +112,46 @@ public class UserServiceImpl implements UserService{
                 new ResponseStatusException(HttpStatus.BAD_REQUEST, "User tidak ditemukan"));
 
         return toUserResponse(user);
+    }
+
+    @Override
+    public String verifyAccount(String email, String otp) {
+        User user = userRepository.findUserByEmailAddress(email)
+                .orElseThrow(()->new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not found with this email: " + email));
+
+        if (user.getRegisterOtp().get(0).getOtp().equals(otp) &&
+                Duration.between(user.getRegisterOtp().get(0).getOtpGenerateTime(), LocalDateTime.now()).getSeconds() < (2 * 60)) {
+
+            user.setIsActive(true);
+            userRepository.save(user);
+
+            return "OTP verified, you can log in";
+        }
+
+        return "Please regenerate OTP and try again";
+    }
+
+    /*
+    * Method ini masih error karena data otp ditable register otp tidak terupdate tetapi malah tambah data baru,
+    * sehingga waktu verify otp yang baru tidak terdeteksi karena get pada method verifyAccount mengambil data ke-0
+    * */
+    @Override
+    public String regenerateOtp(String email) {
+        User user = userRepository.findUserByEmailAddress(email)
+                .orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
+        String otp = otpUtil.generateOtp();
+        try {
+            emailUtil.sendOtpEmail(email, otp);
+        } catch (MessagingException e) {
+            throw new RuntimeException("Unable to send OTP please try again : " + e.getMessage());
+        }
+
+        RegisterOtp registerOtp = new RegisterOtp();
+        registerOtp.setOtp(otp);
+        registerOtp.setOtpGenerateTime(LocalDateTime.now());
+        user.addRegisterOtp(registerOtp);
+        userRepository.save(user);
+        return "Email sent... please verify account withing 2 minute";
     }
 
     private UserResponse toUserResponse(User user){
