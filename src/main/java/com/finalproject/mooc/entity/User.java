@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,6 +37,8 @@ public class User{
 
     private String urlPhoto;
 
+    private Boolean isActive;
+
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Course> course;
 
@@ -48,4 +51,16 @@ public class User{
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Roles> roles = new HashSet<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<RegisterOtp> registerOtp;
+
+    public void addRegisterOtp(RegisterOtp registerOtp) {
+        if (this.registerOtp == null) {
+            this.registerOtp = new ArrayList<>();
+        }
+        this.registerOtp.add(registerOtp);
+        registerOtp.setUser(this);
+    }
+
 }

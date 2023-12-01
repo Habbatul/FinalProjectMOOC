@@ -1,5 +1,6 @@
 package com.finalproject.mooc.service;
 
+import com.finalproject.mooc.entity.RegisterOtp;
 import com.finalproject.mooc.entity.User;
 import com.finalproject.mooc.entity.security.Roles;
 import com.finalproject.mooc.enums.ERole;
@@ -11,6 +12,8 @@ import com.finalproject.mooc.model.security.UserDetailsImpl;
 import com.finalproject.mooc.repository.RoleRepository;
 import com.finalproject.mooc.repository.UserRepository;
 import com.finalproject.mooc.security.JwtUtil;
+import com.finalproject.mooc.util.EmailUtil;
+import com.finalproject.mooc.util.OtpUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -24,8 +27,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -46,6 +51,12 @@ public class AuthServiceImpl implements AuthService {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
+    private OtpUtil otpUtil;
+
+    @Autowired
+    private EmailUtil emailUtil;
+
+    @Autowired
     private JwtUtil jwtUtils;
 
     @Value("${jwt.expiration.ms}")
@@ -55,7 +66,13 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public JwtResponse authenticateUser(LoginRequest login, HttpServletResponse response) {
         //sementara gini dulu
-        User user = userRepository.findUserByEmailAddress(login.getEmailAddress()).orElseThrow(()->new ResponseStatusException(HttpStatus.BAD_REQUEST, "User dengan email tidak ditemukan"));
+        User user = userRepository.findUserByEmailAddress(login.getEmailAddress())
+                .orElseThrow(()->new ResponseStatusException(HttpStatus.BAD_REQUEST, "User dengan email tidak ditemukan"));
+
+        if (!user.getIsActive()) {
+            return new JwtResponse("Account not verified", 0L, "failed",
+                    "failed", Collections.singletonList("failed"));
+        }
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(user.getUsername(), login.getPassword())
@@ -76,6 +93,13 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     @Override
     public WebResponse<String> registerUser(SignupRequest signupRequest) {
+        String otp = otpUtil.generateOtp();
+        try {
+            emailUtil.sendOtpEmail(signupRequest.getEmail(), otp);
+        } catch (MessagingException e) {
+            throw new RuntimeException("Unable to send OTP please try again : " + e.getMessage());
+        }
+
         Boolean usernameExist = userRepository.existsByUsername(signupRequest.getUsername());
         if(Boolean.TRUE.equals(usernameExist)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username telah ada");
@@ -126,6 +150,12 @@ public class AuthServiceImpl implements AuthService {
 //        } catch (IllegalArgumentException e) {
 //            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ada kesalahan pada Role");
 //        }
+
+        RegisterOtp registerOtp = new RegisterOtp();
+        registerOtp.setOtp(otp);
+        registerOtp.setOtpGenerateTime(LocalDateTime.now());
+        user.addRegisterOtp(registerOtp);
+        user.setIsActive(false);
 
         userRepository.save(user);
 

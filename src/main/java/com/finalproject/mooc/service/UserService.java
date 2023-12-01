@@ -15,4 +15,8 @@ public interface UserService {
 
     UserResponse showUserByUsername(String username);
 
+    String verifyAccount(String email, String otp);
+
+    String regenerateOtp(String email);
+
 }
