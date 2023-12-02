@@ -55,6 +55,9 @@ public class User{
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<RegisterOtp> registerOtp;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<CourseProgress> courseProgresses;
+
     public void addRegisterOtp(RegisterOtp registerOtp) {
         if (this.registerOtp == null) {
             this.registerOtp = new ArrayList<>();

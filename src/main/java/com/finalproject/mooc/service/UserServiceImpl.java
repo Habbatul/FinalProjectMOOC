@@ -151,11 +151,11 @@ public class UserServiceImpl implements UserService{
         String oldOtp = registerOtpRepository.getOtpOld(email);
         registerOtpRepository.updatePasswordByOtp(oldOtp, registerOtp);
 
-//        try {
-//            emailUtil.sendOtpEmail(email, otp);
-//        } catch (MessagingException e) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unable to send OTP please try again : " + e.getMessage());
-//        }
+        try {
+            emailUtil.sendOtpEmail(email, otp);
+        } catch (MessagingException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unable to send OTP please try again : " + e.getMessage());
+        }
 
 
         userRepository.save(user);

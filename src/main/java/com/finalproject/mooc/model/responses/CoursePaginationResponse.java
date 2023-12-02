@@ -9,8 +9,8 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @Builder
-public class CoursePaginationResponse {
-    List<CourseResponseNoSubject> courseResponseNoSubject;
+public class CoursePaginationResponse<T> {
+    List<T> courseList;
     Integer productCurrentPage;
     Integer productTotalPage;
 }

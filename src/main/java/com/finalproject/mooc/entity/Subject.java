@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Builder
 @Data
@@ -25,7 +26,6 @@ public class Subject {
     private String url;
     private Integer chapter;
 
-    @Column(unique = true)
     private Integer sequence;
 
     @Enumerated(EnumType.STRING)
@@ -33,4 +33,7 @@ public class Subject {
     @ManyToOne
     @JoinColumn(name = "course_code")
     private Course course;
+
+    @OneToMany(mappedBy = "subject", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<SubjectProgress> subjectProgresses;
 }

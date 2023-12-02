@@ -14,7 +14,7 @@ public class ResetPasswordController {
     @Autowired
     private UserService userService;
     @Operation(summary = "Melakukan generate token untuk izin lupa password")
-    @GetMapping("/forget-password/generate-token")
+    @PostMapping("/forget-password/generate-token")
     public ResponseEntity<WebResponse<String>> generateToken(@RequestHeader String emailAddress) {
         userService.makeTokenResetPassword(emailAddress);
         return ResponseEntity.ok(WebResponse.<String>builder().data("Sukses mengirim email reset password").build());

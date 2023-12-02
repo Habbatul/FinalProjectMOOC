@@ -31,15 +31,15 @@ public class CourseController {
 
     @Operation(summary = "Menampilkan list course dengan filter (Category, Level, dan Premium) serta fitur searching dan pagination")
     @GetMapping("/course")
-    public ResponseEntity<WebResponse<CoursePaginationResponse>> getCoursesByCategoryAndLevel(
+    public ResponseEntity<WebResponse<CoursePaginationResponse<CourseResponseNoSubject>>> getCoursesByCategoryAndLevel(
             @RequestParam(required = false, defaultValue = "1") Integer page,
             @RequestParam(required = false) String title,
             @RequestParam(required = false) List<CourseCategory> categories,
             @RequestParam(required = false) List<CourseLevel> courseLevel,
-            @RequestParam(required = false) List<TypePremium> isPremium,
-            @RequestParam(required = false) String username) {
+            @RequestParam(required = false) List<TypePremium> isPremium) {
 
-        return ResponseEntity.ok(WebResponse.<CoursePaginationResponse>builder()
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return ResponseEntity.ok(WebResponse.<CoursePaginationResponse<CourseResponseNoSubject>>builder()
                 .data(courseService.showCourseByCategoryOrLevelOrPremiumAndSearch(page, categories, courseLevel, isPremium, title, username))
                 .build());
     }
@@ -57,7 +57,7 @@ public class CourseController {
     }
 
     @Operation(summary = "Membuat course tanpa subject")
-    @PostMapping("course/")
+    @PostMapping("course")
     public ResponseEntity<WebResponse<CourseCreateResponse>> createCourse(
             @RequestBody CreateCourseRequest courseRequest,
             HttpServletRequest request) {
@@ -73,10 +73,8 @@ public class CourseController {
 
     @Operation(summary = "Membuat subject, pastikan ada parameter course code nya")
     @PostMapping("subject/")
-    public ResponseEntity<WebResponse<SubjectResponse>> createModule(
-            @RequestBody CreateSubjectRequest createSubjectRequest,
-            @RequestParam String courseCode,
-            HttpServletRequest request) {
+    public ResponseEntity<WebResponse<SubjectResponse>> createModule(@RequestBody CreateSubjectRequest createSubjectRequest,
+                                                                     @RequestParam String courseCode) {
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 

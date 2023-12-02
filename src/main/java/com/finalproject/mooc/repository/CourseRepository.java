@@ -1,6 +1,7 @@
 package com.finalproject.mooc.repository;
 
 import com.finalproject.mooc.entity.Course;
+import com.finalproject.mooc.entity.SubjectProgress;
 import com.finalproject.mooc.enums.CourseCategory;
 import com.finalproject.mooc.enums.CourseLevel;
 import com.finalproject.mooc.enums.TypePremium;
@@ -44,7 +45,8 @@ public interface CourseRepository extends JpaRepository<Course, String> {
     @Query("SELECT COUNT(s) FROM Course c JOIN c.subjects s WHERE c.idCourse = :courseCode")
     Integer findTotalModule(@Param("courseCode") String courseCode);
 
-    @Query("SELECT c FROM Course c WHERE LOWER(c.courseName) LIKE LOWER(CONCAT('%',:keyword, '%'))")
-    Optional<Page<Course>> searchCourse(@Param("keyword") String keyword, Pageable pageable);
+
+//    @Query("SELECT c FROM Course c WHERE LOWER(c.courseName) LIKE LOWER(CONCAT('%',:keyword, '%'))")
+//    Optional<Page<Course>> searchCourse(@Param("keyword") String keyword, Pageable pageable);
 
 }

@@ -1,8 +1,6 @@
 package com.finalproject.mooc.service;
 
-import com.finalproject.mooc.entity.Course;
-import com.finalproject.mooc.entity.Subject;
-import com.finalproject.mooc.entity.User;
+import com.finalproject.mooc.entity.*;
 import com.finalproject.mooc.enums.CourseCategory;
 import com.finalproject.mooc.enums.CourseLevel;
 import com.finalproject.mooc.enums.ERole;
@@ -10,10 +8,7 @@ import com.finalproject.mooc.enums.TypePremium;
 import com.finalproject.mooc.model.requests.CreateCourseRequest;
 import com.finalproject.mooc.model.requests.CreateSubjectRequest;
 import com.finalproject.mooc.model.responses.*;
-import com.finalproject.mooc.repository.CourseRepository;
-import com.finalproject.mooc.repository.OrderRepository;
-import com.finalproject.mooc.repository.SubjectRepository;
-import com.finalproject.mooc.repository.UserRepository;
+import com.finalproject.mooc.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -38,6 +33,12 @@ public class CourseServiceImpl implements CourseService {
     UserRepository userRepository;
     @Autowired
     OrderRepository orderRepository;
+
+    //kebutuhan intergrasi course yang diambil
+    @Autowired
+    SubjectProgressRepository subjectProgressRepository;
+    @Autowired
+    CourseProgressRepository courseProgressRepository;
 
     //sementara create course sama subject dipisahkan, menunggu info dari FE
     @Transactional
@@ -77,12 +78,17 @@ public class CourseServiceImpl implements CourseService {
                 .build();
 
         subjectRepository.save(subject);
+
+        //tambahkan ke bagian progress subject (tabel dimana user mengambil course beserta subject) untuk integrasi ke user
+        subjectProgressRepository.saveAll(subjectToSubjectProgressList(subject, courseCode));
+
+
         return toSubjectResponse(subject);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public CoursePaginationResponse showCourseByCategoryOrLevelOrPremiumAndSearch(Integer page, List<CourseCategory> categories,
+    public CoursePaginationResponse<CourseResponseNoSubject> showCourseByCategoryOrLevelOrPremiumAndSearch(Integer page, List<CourseCategory> categories,
                                                                                   List<CourseLevel> courseLevel,
                                                                                   List<TypePremium> typePremium,
                                                                                   String keyword, String username) {
@@ -221,7 +227,7 @@ public class CourseServiceImpl implements CourseService {
                 .build();
     }
 
-    private CoursePaginationResponse toCoursePaginationResponse(Page<Course> coursePage){
+    private CoursePaginationResponse<CourseResponseNoSubject> toCoursePaginationResponse(Page<Course> coursePage){
         List<Course> courseResponses = coursePage.getContent();
 
         //mapping course nya pakek fungsi konversi ke courseResponse
@@ -230,8 +236,8 @@ public class CourseServiceImpl implements CourseService {
                 .map(this::toCourseResponseNoSubject)
                 .collect(Collectors.toList());
 
-        return CoursePaginationResponse.builder()
-                .courseResponseNoSubject(courseResponseNoSubjectList)
+        return CoursePaginationResponse.<CourseResponseNoSubject>builder()
+                .courseList(courseResponseNoSubjectList)
                 .productCurrentPage(coursePage.getNumber() + 1)
                 .productTotalPage(coursePage.getTotalPages())
                 .build();
@@ -251,7 +257,27 @@ public class CourseServiceImpl implements CourseService {
                 .teacher(course.getUser().getUsername())
                 .build();
     }
+
+
+
+    //ini untuk kebutuhan update data pada tabel subject progress (subject yang diambil oleh user) (Integrasi proses bisnis)
+    private List<SubjectProgress> subjectToSubjectProgressList(Subject subject, String courseCode){
+
+        List<CourseProgress> courseProgresses = courseProgressRepository.showCourseProgressByCourseCode(courseCode)
+                .orElseThrow(()-> new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, "Tidak dapat update ke progress user"));
+
+        return courseProgresses.stream()
+                .map(courseProgress -> SubjectProgress.builder()
+                        .courseProgress(courseProgress)
+                        .subject(subject)
+                        .isDone(false)
+                        .build())
+                .collect(Collectors.toList());
+    }
+
 }
+
+
 
 //    /**
 //     * Funsgi ini ternyata gabisa untuk pagination, karena harus showAll
