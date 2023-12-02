@@ -38,4 +38,10 @@ public interface CourseProgressRepository extends JpaRepository<CourseProgress, 
 
     @Query("SELECT COUNT(cp) > 0 FROM CourseProgress cp WHERE cp.user = :user AND cp.course = :course")
     Boolean findCourseProgressExist(@Param("user") User user, @Param("course") Course course);
+
+    //untuk dashboard
+    @Query("SELECT COUNT(DISTINCT u) FROM CourseProgress cp JOIN cp.user u JOIN cp.course c WHERE c.user.username = :teacher")
+    Integer countActiveUser(@Param("teacher") String teacher);
+
+
 }

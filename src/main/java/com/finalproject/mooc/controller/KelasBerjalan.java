@@ -13,10 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -49,7 +46,7 @@ public class KelasBerjalan {
                 .build());
     }
 
-    @Operation(summary = "Menampilkan seluruh data kelas yang berjalan")
+    @Operation(summary = "Menambahkan ke Kelas Saya (menambahkan course yang diambil untuk user yang login)")
     @PostMapping ("/course-progress/start-course")
     ResponseEntity<WebResponse<ProgressCourseNoSubject>> startCourse(@RequestParam String courseCode){
 
@@ -58,4 +55,16 @@ public class KelasBerjalan {
                 .data(courseProgressService.startCourse(username, courseCode))
                 .build());
     }
+
+    @Operation(summary = "Mengubah status modul/subject pada course yang dipilih menjadi done")
+    @PutMapping("/course-progress/subject-done")
+    ResponseEntity<WebResponse<String>> subjectProgressDone(@RequestParam String subjectCode){
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        courseProgressService.editDoneCourse(username, subjectCode);
+        return ResponseEntity.ok(WebResponse.<String>builder()
+                .data("pengubahan dilakukan")
+                .build());
+    }
+
 }

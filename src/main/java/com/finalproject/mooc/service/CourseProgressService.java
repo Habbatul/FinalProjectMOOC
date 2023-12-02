@@ -101,7 +101,10 @@ public class CourseProgressService {
         return toProgressCourseNoSubject(courseProgress);
     }
 
-
+    @Transactional
+    public void editDoneCourse(String username, String subjectCode){
+        subjectProgressRepository.updateSubjectProgressIsDone(username, subjectCode);
+    }
 
 
     //helper konversi

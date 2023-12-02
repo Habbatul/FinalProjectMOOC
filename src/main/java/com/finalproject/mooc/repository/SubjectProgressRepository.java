@@ -15,9 +15,16 @@ public interface SubjectProgressRepository extends JpaRepository<SubjectProgress
     @Query("SELECT COUNT(sp) * 100 FROM SubjectProgress sp WHERE sp.isDone = TRUE AND sp.courseProgress.id = :courseProgressId")
     Long totalPercentageSubjectIsDone(@Param("courseProgressId") Integer courseProgressId);
 
-    @Transactional
+
+    //nanti dioptimalkan
     @Modifying
-    @Query("UPDATE SubjectProgress sp SET sp.isDone = :isDone WHERE (sp.id = :subjectProgressId) AND (sp.courseProgress.id = :courseProgressId)")
-    void updateSubjectProgressIsDone(@Param("isDone") Boolean isDone, @Param("subjectProgressId")Integer subjectProgressId);
+    @Query("UPDATE SubjectProgress sp SET sp.isDone = true " +
+            "WHERE sp IN (SELECT sp FROM SubjectProgress sp " +
+            "JOIN sp.courseProgress cp " +
+            "JOIN cp.user u " +
+            "JOIN sp.subject s " +
+            "WHERE u.username = :username " +
+            "AND s.idSubject = :subjectCode)")
+    void updateSubjectProgressIsDone(@Param("username") String username, @Param("subjectCode") String subjectCode);
 
 }

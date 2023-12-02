@@ -46,6 +46,13 @@ public interface CourseRepository extends JpaRepository<Course, String> {
     Integer findTotalModule(@Param("courseCode") String courseCode);
 
 
+    //untuk dashboard
+    @Query("SELECT COUNT(c) from Course c LEFT JOIN c.user u WHERE u.username = :teacher")
+    Integer countActiveClass(@Param("teacher")String teacher);
+
+    @Query("SELECT COUNT(c) from Course c LEFT JOIN c.user u WHERE u.username = :teacher AND c.TypePremium = 'PREMIUM'")
+    Integer countPremiumClass(@Param("teacher")String teacher);
+
 //    @Query("SELECT c FROM Course c WHERE LOWER(c.courseName) LIKE LOWER(CONCAT('%',:keyword, '%'))")
 //    Optional<Page<Course>> searchCourse(@Param("keyword") String keyword, Pageable pageable);
 
