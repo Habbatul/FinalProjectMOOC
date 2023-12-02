@@ -11,7 +11,7 @@ public interface UserService {
     void updateProfile(String username, UpdateUserRequest userRequest) throws IOException;
     void updatePassword(String username, UpdateUserPassword passwordRequest);
     void resetPassword(ResetPasswordRequest passwordRequest);
-    String makeTokenResetPassword(String emailAddress);
+    void makeTokenResetPassword(String emailAddress);
 
     UserResponse showUserByUsername(String username);
 

@@ -138,18 +138,26 @@ public class UserServiceImpl implements UserService{
     @Override
     public String regenerateOtp(String email) {
         User user = userRepository.findUserByEmailAddress(email)
-                .orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
-        String otp = otpUtil.generateOtp();
-        try {
-            emailUtil.sendOtpEmail(email, otp);
-        } catch (MessagingException e) {
-            throw new RuntimeException("Unable to send OTP please try again : " + e.getMessage());
-        }
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not found with this email: " + email));
 
+        String otp = otpUtil.generateOtp();
         RegisterOtp registerOtp = new RegisterOtp();
         registerOtp.setOtp(otp);
         registerOtp.setOtpGenerateTime(LocalDateTime.now());
         user.addRegisterOtp(registerOtp);
+
+        log.info("waktu pada otp seharusnya : {} ", registerOtp.getOtpGenerateTime());
+
+        String oldOtp = registerOtpRepository.getOtpOld(email);
+        registerOtpRepository.updatePasswordByOtp(oldOtp, registerOtp);
+
+//        try {
+//            emailUtil.sendOtpEmail(email, otp);
+//        } catch (MessagingException e) {
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unable to send OTP please try again : " + e.getMessage());
+//        }
+
+
         userRepository.save(user);
         return "Email sent... please verify account withing 2 minute";
     }
@@ -197,18 +205,25 @@ public class UserServiceImpl implements UserService{
 
     @Transactional
     @Override
-    public String makeTokenResetPassword(String emailAddress) {
+    public void makeTokenResetPassword(String emailAddress) {
         ResetPassword token = ResetPassword.builder()
-                .time(LocalDateTime.now().truncatedTo(ChronoUnit.MICROS))
+                .time(LocalDateTime.now())
                 .user(userRepository.findUserByEmailAddress(emailAddress).orElseThrow(
                         ()-> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email tidak ditemukan")))
                 .build();
         resetPasswordRepository.save(token);
 
+
         //lakukan logic untuk kirim email disini kirimkan url Front-End dan berikan parameter token
         //example : <a href= www.example.com/forget-password/{resetToken}>Tekan disini untuk reset password</a>
 
-        return token.getToken();
+        try {
+            //nantinya bisa ganti url
+            emailUtil.sendOtpEmailResetPassword(emailAddress, token.getToken());
+        } catch (MessagingException e) {
+            log.info("Unable to send url please try again : {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tidak bisa mengirim url, coba lagi");
+        }
     }
 
 }

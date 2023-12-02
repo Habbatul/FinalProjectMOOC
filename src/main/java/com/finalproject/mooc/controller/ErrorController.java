@@ -25,12 +25,12 @@ public class ErrorController {
                         .build()
                 );
     }
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<WebResponse<String>> handleDataIntegrityViolation(DataIntegrityViolationException error) {
-        return ResponseEntity.badRequest()
-                .body(WebResponse.<String>builder()
-                        .error("Ada kesalahan integritas data, cek field unik")
-                        .build());
-    }
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    @ExceptionHandler(DataIntegrityViolationException.class)
+//    public ResponseEntity<WebResponse<String>> handleDataIntegrityViolation(DataIntegrityViolationException error) {
+//        return ResponseEntity.badRequest()
+//                .body(WebResponse.<String>builder()
+//                        .error("Ada kesalahan integritas data, cek field unik")
+//                        .build());
+//    }
 }

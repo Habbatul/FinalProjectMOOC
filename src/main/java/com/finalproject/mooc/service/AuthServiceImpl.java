@@ -9,13 +9,13 @@ import com.finalproject.mooc.model.requests.auth.SignupRequest;
 import com.finalproject.mooc.model.responses.WebResponse;
 import com.finalproject.mooc.model.responses.auth.JwtResponse;
 import com.finalproject.mooc.model.security.UserDetailsImpl;
+import com.finalproject.mooc.repository.RegisterOtpRepository;
 import com.finalproject.mooc.repository.RoleRepository;
 import com.finalproject.mooc.repository.UserRepository;
 import com.finalproject.mooc.security.JwtUtil;
 import com.finalproject.mooc.util.EmailUtil;
 import com.finalproject.mooc.util.OtpUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,11 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.mail.MessagingException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,6 +49,9 @@ public class AuthServiceImpl implements AuthService {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
+    private RegisterOtpRepository registerOtpRepository;
+
+    @Autowired
     private OtpUtil otpUtil;
 
     @Autowired
@@ -59,19 +60,15 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private JwtUtil jwtUtils;
 
-    @Value("${jwt.expiration.ms}")
-    private int jwtExpirationMs;
-
     @Transactional(readOnly = true)
     @Override
     public JwtResponse authenticateUser(LoginRequest login, HttpServletResponse response) {
         //sementara gini dulu
         User user = userRepository.findUserByEmailAddress(login.getEmailAddress())
-                .orElseThrow(()->new ResponseStatusException(HttpStatus.BAD_REQUEST, "User dengan email tidak ditemukan"));
+                .orElseThrow(()->new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User dengan email tidak ditemukan"));
 
-        if (!user.getIsActive()) {
-            return new JwtResponse("Account not verified", 0L, "failed",
-                    "failed", Collections.singletonList("failed"));
+        if (user.getIsActive() == null || !user.getIsActive() ) {
+           throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User belum terverifikasi");
         }
 
         Authentication authentication = authenticationManager.authenticate(
@@ -93,13 +90,6 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     @Override
     public WebResponse<String> registerUser(SignupRequest signupRequest) {
-        String otp = otpUtil.generateOtp();
-        try {
-            emailUtil.sendOtpEmail(signupRequest.getEmail(), otp);
-        } catch (MessagingException e) {
-            throw new RuntimeException("Unable to send OTP please try again : " + e.getMessage());
-        }
-
         Boolean usernameExist = userRepository.existsByUsername(signupRequest.getUsername());
         if(Boolean.TRUE.equals(usernameExist)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username telah ada");
@@ -151,11 +141,23 @@ public class AuthServiceImpl implements AuthService {
 //            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ada kesalahan pada Role");
 //        }
 
+
+        //kupindah bawah biar kalo kena validasi ga ngirim otp
+        String otp = otpUtil.generateOtp();
+
         RegisterOtp registerOtp = new RegisterOtp();
         registerOtp.setOtp(otp);
         registerOtp.setOtpGenerateTime(LocalDateTime.now());
         user.addRegisterOtp(registerOtp);
         user.setIsActive(false);
+        registerOtpRepository.save(registerOtp);
+
+        try {
+            emailUtil.sendOtpEmail(signupRequest.getEmail(), otp);
+        } catch (MessagingException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to send OTP please try again");
+        }
+
 
         userRepository.save(user);
 

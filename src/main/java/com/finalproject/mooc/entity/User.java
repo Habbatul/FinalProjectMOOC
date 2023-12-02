@@ -52,7 +52,7 @@ public class User{
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Roles> roles = new HashSet<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<RegisterOtp> registerOtp;
 
     public void addRegisterOtp(RegisterOtp registerOtp) {
