@@ -25,7 +25,6 @@ public class Subject {
     private String title;
     private String url;
     private Integer chapter;
-
     private Integer sequence;
 
     @Enumerated(EnumType.STRING)

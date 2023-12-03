@@ -1,21 +1,15 @@
 package com.finalproject.mooc.controller;
 
 import com.finalproject.mooc.model.requests.CreateOrderRequest;
-import com.finalproject.mooc.model.responses.OrderStatusResponse;
-import com.finalproject.mooc.model.responses.WebResponse;
-import com.finalproject.mooc.service.CourseService;
+import com.finalproject.mooc.model.responses.*;
 import com.finalproject.mooc.service.OrderService;
-import com.finalproject.mooc.service.media.CloudinaryService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
+import java.util.List;
 
 @RestController
 public class OrderController {
@@ -29,6 +23,16 @@ public class OrderController {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return ResponseEntity.ok(WebResponse.<OrderStatusResponse>builder()
                 .data(orderService.orderCourse(username,orderRequest))
+                .build());
+    }
+
+    @Operation(summary = "Menampilkan history order pelanggan")
+    @GetMapping("/order/history")
+    ResponseEntity<WebResponse<List<OrderHistoryResponse>>> showOrderHistory(){
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return ResponseEntity.ok(WebResponse.<List<OrderHistoryResponse>>builder()
+                .data(orderService.showOrderHistory(username))
                 .build());
     }
 }

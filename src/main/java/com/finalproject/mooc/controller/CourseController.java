@@ -72,7 +72,7 @@ public class CourseController {
     }
 
     @Operation(summary = "Membuat subject, pastikan ada parameter course code nya")
-    @PostMapping("subject/")
+    @PostMapping("subject")
     public ResponseEntity<WebResponse<SubjectResponse>> createModule(@RequestBody CreateSubjectRequest createSubjectRequest,
                                                                      @RequestParam String courseCode) {
 

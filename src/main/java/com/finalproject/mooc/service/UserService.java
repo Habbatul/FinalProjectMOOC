@@ -12,11 +12,8 @@ public interface UserService {
     void updatePassword(String username, UpdateUserPassword passwordRequest);
     void resetPassword(ResetPasswordRequest passwordRequest);
     void makeTokenResetPassword(String emailAddress);
-
     UserResponse showUserByUsername(String username);
-
     String verifyAccount(String email, String otp);
-
     String regenerateOtp(String email);
 
 }
