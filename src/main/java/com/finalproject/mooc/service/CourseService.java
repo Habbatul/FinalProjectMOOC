@@ -14,7 +14,6 @@ public interface CourseService {
     SubjectResponse createSubject(CreateSubjectRequest createSubjectRequest, String username, String courseCode);
     CoursePaginationResponse<CourseResponseNoSubject> showCourseByCategoryOrLevelOrPremiumAndSearch(Integer page, List<CourseCategory> category, List<CourseLevel> courseLevel, List<TypePremium> typePremium, String keyword, String username);
     CourseResponseWithSubject showDetailCourse(String courseCode, String username);
-
     ManageCoursePaginationResponse showManageCourseByFilterSearchPagination(Integer page, List<CourseCategory> category, List<CourseLevel> courseLevel, List<TypePremium> typePremium, String keyword);
 
 //    CoursePaginationResponse showCourse(Integer page, String username);
