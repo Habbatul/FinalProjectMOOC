@@ -84,6 +84,20 @@ public class CourseController {
         );
     }
 
+    @Operation(summary = "Menampilkan list Manage Course pada Admin dengan filter (Category, Level, dan Premium) serta fitur searching dan pagination")
+    @GetMapping("admin/manage-course")
+    public ResponseEntity<WebResponse<ManageCoursePaginationResponse>> getManageCourseByFilterSearchPagination(
+            @RequestParam(required = false, defaultValue = "1") Integer page,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) List<CourseCategory> categories,
+            @RequestParam(required = false) List<CourseLevel> courseLevel,
+            @RequestParam(required = false) List<TypePremium> isPremium) {
+
+        return ResponseEntity.ok(WebResponse.<ManageCoursePaginationResponse>builder()
+                .data(courseService.showManageCourseByFilterSearchPagination(page, categories, courseLevel, isPremium, title))
+                .build());
+    }
+
 //tak Gabungin gaes ternyata bisa pakek query jadi lebih simple gaperlu ita itu
 
 //    @GetMapping("/course")

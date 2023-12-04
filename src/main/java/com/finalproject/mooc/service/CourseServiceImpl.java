@@ -121,6 +121,21 @@ public class CourseServiceImpl implements CourseService {
                 username);
     }
 
+    @Override
+    public ManageCoursePaginationResponse showManageCourseByFilterSearchPagination(Integer page, List<CourseCategory> category, List<CourseLevel> courseLevel, List<TypePremium> typePremium, String keyword) {
+        log.info("ManageCoursePagination bejalan");
+        page -= 1; //halaman asli dari index 0
+        //sementara size nya 3
+        Pageable halaman = PageRequest.of(page, 3);
+        Page<Course> coursePage = courseRepository.findCourseByCategoryAndLevel(category, courseLevel, typePremium, keyword, halaman)
+                .orElseThrow(()-> new ResponseStatusException(HttpStatus.BAD_REQUEST,"Data tidak ditemukan"));
+
+        if (coursePage.getContent().isEmpty())
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Data tidak ditemukan");
+
+        return toManageCoursePaginationResponse(coursePage);
+    }
+
 
     //semua helper ada dibawah ini
     private SubjectResponse toSubjectResponse(Subject subject) {
@@ -258,6 +273,30 @@ public class CourseServiceImpl implements CourseService {
                 .build();
     }
 
+    private ManageCourseResponse toManageCourseResponse(Course course){
+        return ManageCourseResponse.builder()
+                .courseCode(course.getIdCourse())
+                .category(course.getCourseCategory().name())
+                .courseName(course.getCourseName())
+                .courseType(course.getTypePremium().name())
+                .level(course.getCourseLevel().name())
+                .coursePrice(course.getCoursePrice())
+                .build();
+    }
+
+    private ManageCoursePaginationResponse toManageCoursePaginationResponse(Page<Course> coursePage) {
+        List<Course> courseResponse = coursePage.getContent();
+
+        List<ManageCourseResponse> manageCourseResponses = courseResponse.stream()
+                .map(this::toManageCourseResponse)
+                .collect(Collectors.toList());
+
+        return ManageCoursePaginationResponse.builder()
+                .manageCourseResponse(manageCourseResponses)
+                .productCurrentPage(coursePage.getNumber() + 1)
+                .productTotalPage(coursePage.getTotalPages())
+                .build();
+    }
 
 
     //ini untuk kebutuhan update data pada tabel subject progress (subject yang diambil oleh user) (Integrasi proses bisnis)

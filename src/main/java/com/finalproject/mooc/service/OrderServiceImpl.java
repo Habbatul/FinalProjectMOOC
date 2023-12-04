@@ -10,10 +10,16 @@ import com.finalproject.mooc.enums.TypePremium;
 import com.finalproject.mooc.model.requests.CreateOrderRequest;
 import com.finalproject.mooc.model.responses.OrderHistoryResponse;
 import com.finalproject.mooc.model.responses.OrderStatusResponse;
+import com.finalproject.mooc.model.responses.PaymentStatusPaginationResponse;
+import com.finalproject.mooc.model.responses.PaymentStatusResponse;
 import com.finalproject.mooc.repository.CourseRepository;
 import com.finalproject.mooc.repository.OrderRepository;
 import com.finalproject.mooc.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -24,6 +30,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
+@Slf4j
 @Service
 public class OrderServiceImpl implements OrderService {
 
@@ -74,6 +81,21 @@ public class OrderServiceImpl implements OrderService {
         return toOrderStatusResponse(orderRepository.save(order));
     }
 
+    @Override
+    public PaymentStatusPaginationResponse showPaymentStatusByFilterSearchPagination(Integer page, List<CourseCategory> category, List<PaidStatus> paidStatus, String keyword) {
+        log.info("PaymentStatusPagination bejalan");
+        page -= 1; //halaman asli dari index 0
+        //sementara size nya 3
+        Pageable halaman = PageRequest.of(page, 3);
+        Page<Order> orderPage = orderRepository.findOrderByFilterSearchPagination(category, paidStatus, keyword, halaman)
+                .orElseThrow(()-> new ResponseStatusException(HttpStatus.BAD_REQUEST,"Data tidak ditemukan"));
+
+        if (orderPage.getContent().isEmpty())
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Data tidak ditemukan");
+
+        return toPaymentStatusPaginationResponse(orderPage);
+    }
+
     private OrderStatusResponse toOrderStatusResponse(Order order) {
         return OrderStatusResponse.builder()
                 .coursePremiumName(order.getCourse().getCourseName())
@@ -104,6 +126,31 @@ public class OrderServiceImpl implements OrderService {
                             .build();
                 }
         ).collect(Collectors.toList());
+    }
+
+    private PaymentStatusResponse toPaymentStatusResponse(Order order) {
+        return PaymentStatusResponse.builder()
+                .id(order.getIdOrder())
+                .category(order.getCourse().getCourseCategory().name())
+                .premiumCourse(order.getCourse().getCourseName())
+                .status(order.getPaid().name())
+                .paymentMethod(order.getOrderMethod())
+                .paymentDate(order.getOrderDate())
+                .build();
+    }
+
+    private PaymentStatusPaginationResponse toPaymentStatusPaginationResponse(Page<Order> orderPage) {
+        List<Order> orderResponse = orderPage.getContent();
+
+        List<PaymentStatusResponse> paymentStatusResponses = orderResponse.stream()
+                .map(this::toPaymentStatusResponse)
+                .collect(Collectors.toList());
+
+        return PaymentStatusPaginationResponse.builder()
+                .paymentStatusResponses(paymentStatusResponses)
+                .productCurrentPage(orderPage.getNumber() + 1)
+                .productTotalPage(orderPage.getTotalPages())
+                .build();
     }
 
 }
