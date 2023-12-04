@@ -37,18 +37,4 @@ public class OrderController {
                 .data(orderService.showOrderHistory(username))
                 .build());
     }
-
-
-    @Operation(summary = "Menampilkan list Payment Status pada Admin dengan filter (Category dan Paid Status) serta fitur searching dan pagination")
-    @GetMapping("admin/payment-status")
-    public ResponseEntity<WebResponse<PaymentStatusPaginationResponse>> getPaymentStatusByFilterSearchPagination(
-            @RequestParam(required = false, defaultValue = "1") Integer page,
-            @RequestParam(required = false) String title,
-            @RequestParam(required = false) List<CourseCategory> categories,
-            @RequestParam(required = false) List<PaidStatus> status) {
-
-        return ResponseEntity.ok(WebResponse.<PaymentStatusPaginationResponse>builder()
-                .data(orderService.showPaymentStatusByFilterSearchPagination(page, categories, status, title))
-                .build());
-    }
 }

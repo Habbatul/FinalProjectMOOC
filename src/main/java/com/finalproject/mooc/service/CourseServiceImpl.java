@@ -122,12 +122,12 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public ManageCoursePaginationResponse showManageCourseByFilterSearchPagination(Integer page, List<CourseCategory> category, List<CourseLevel> courseLevel, List<TypePremium> typePremium, String keyword) {
+    public ManageCoursePaginationResponse showManageCourseByFilterSearchPagination(String username, Integer page, List<CourseCategory> category, List<CourseLevel> courseLevel, List<TypePremium> typePremium, String keyword) {
         log.info("ManageCoursePagination bejalan");
         page -= 1; //halaman asli dari index 0
         //sementara size nya 3
         Pageable halaman = PageRequest.of(page, 3);
-        Page<Course> coursePage = courseRepository.findCourseByCategoryAndLevel(category, courseLevel, typePremium, keyword, halaman)
+        Page<Course> coursePage = courseRepository.findCourseByAdmin(category, courseLevel, typePremium, keyword, username, halaman)
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.BAD_REQUEST,"Data tidak ditemukan"));
 
         if (coursePage.getContent().isEmpty())

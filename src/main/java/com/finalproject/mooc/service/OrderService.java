@@ -19,5 +19,5 @@ public interface OrderService {
     OrderStatusResponse orderCourse(String username, CreateOrderRequest orderRequest);
 
 
-    PaymentStatusPaginationResponse showPaymentStatusByFilterSearchPagination(Integer page, List<CourseCategory> category, List<PaidStatus> paidStatus, String keyword);
+    PaymentStatusPaginationResponse showPaymentStatusByFilterSearchPagination(String username, Integer page, List<CourseCategory> category, List<PaidStatus> paidStatus, String keyword);
 }

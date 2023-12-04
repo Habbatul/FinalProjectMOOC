@@ -82,12 +82,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public PaymentStatusPaginationResponse showPaymentStatusByFilterSearchPagination(Integer page, List<CourseCategory> category, List<PaidStatus> paidStatus, String keyword) {
+    public PaymentStatusPaginationResponse showPaymentStatusByFilterSearchPagination(String username, Integer page, List<CourseCategory> category, List<PaidStatus> paidStatus, String keyword) {
         log.info("PaymentStatusPagination bejalan");
         page -= 1; //halaman asli dari index 0
         //sementara size nya 3
         Pageable halaman = PageRequest.of(page, 3);
-        Page<Order> orderPage = orderRepository.findOrderByFilterSearchPagination(category, paidStatus, keyword, halaman)
+        Page<Order> orderPage = orderRepository.findOrderByTeacher(category, paidStatus, keyword, username, halaman)
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.BAD_REQUEST,"Data tidak ditemukan"));
 
         if (orderPage.getContent().isEmpty())

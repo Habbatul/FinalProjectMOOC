@@ -37,7 +37,17 @@ public interface CourseRepository extends JpaRepository<Course, String> {
                                                         @Param("keyword") String keyword,
                                                         Pageable pageable);
 
-
+    @Query("SELECT c FROM Course c LEFT JOIN c.user WHERE c.user.username = :teacher AND" +
+            "( (c.courseCategory IN :category) OR :category IS NULL) AND " +
+            "( (c.courseLevel IN :courseLevel) OR :courseLevel IS NULL) AND " +
+            "( (c.TypePremium IN :typePremium) OR :typePremium IS NULL) AND " +
+            "((LOWER(c.courseName) LIKE LOWER(CONCAT('%',:keyword, '%'))) OR :keyword IS NULL)")
+    Optional<Page<Course>> findCourseByAdmin(@Param("category") List<CourseCategory> category,
+                                                        @Param("courseLevel") List<CourseLevel> courseLevel,
+                                                        @Param("typePremium") List<TypePremium> typePremium,
+                                                        @Param("keyword") String keyword,
+                                                        @Param("teacher") String teacher,
+                                                        Pageable pageable);
 
     @Query("SELECT c FROM Course c left JOIN c.subjects s WHERE c.idCourse = :courseCode")
     Optional<Course> findCourseJoinSubject(@Param("courseCode") String courseCode);

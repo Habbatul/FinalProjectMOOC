@@ -37,4 +37,14 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
                                                             @Param("paidStatus") List<PaidStatus> paidStatus,
                                                             @Param("keyword") String keyword,
                                                             Pageable pageable);
+
+    @Query("SELECT o FROM Order o LEFT JOIN o.course c WHERE c.user.username = :teacher AND" +
+            "( (o.course.courseCategory IN :category) OR :category IS NULL) AND " +
+            "( (o.paid IN :paidStatus) OR :paidStatus IS NULL) AND " +
+            "((LOWER(o.course.courseName) LIKE LOWER(CONCAT('%',:keyword, '%'))) OR :keyword IS NULL)")
+    Optional<Page<Order>> findOrderByTeacher(@Param("category") List<CourseCategory> category,
+                                                            @Param("paidStatus") List<PaidStatus> paidStatus,
+                                                            @Param("keyword") String keyword,
+                                                            @Param("teacher") String teacher,
+                                                            Pageable pageable);
 }
