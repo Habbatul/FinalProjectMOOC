@@ -15,13 +15,13 @@ public class DashboardService {
     CourseRepository courseRepository;
 
     @Transactional
-    public void cekhasilQuery(String userAdmin){
+    public DasboardResponse cekhasilQuery(String userAdmin){
         Integer activeUser = courseProgressRepository.countActiveUser(userAdmin);
         Integer activeClass =courseRepository.countActiveClass(userAdmin);
         Integer activePremium =courseRepository.countPremiumClass(userAdmin);
         System.out.println("Active user : "+activeUser+"\nActive Class : "+activeClass+"\nPremium Class : "+activePremium);
 
-        DasboardResponse.builder()
+        return DasboardResponse.builder()
                 .activeUser(activeUser)
                 .activeClass(activeClass)
                 .premiumClass(activePremium)
