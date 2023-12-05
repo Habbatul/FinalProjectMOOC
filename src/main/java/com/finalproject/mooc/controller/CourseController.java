@@ -5,6 +5,8 @@ import com.finalproject.mooc.enums.CourseLevel;
 import com.finalproject.mooc.enums.TypePremium;
 import com.finalproject.mooc.model.requests.CreateCourseRequest;
 import com.finalproject.mooc.model.requests.CreateSubjectRequest;
+import com.finalproject.mooc.model.requests.UpdateCourseRequest;
+import com.finalproject.mooc.model.requests.UpdateSubjectRequest;
 import com.finalproject.mooc.model.responses.*;
 import com.finalproject.mooc.service.CourseService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -71,6 +73,32 @@ public class CourseController {
         );
     }
 
+    @Operation(summary = "Edit course tanpa subject, pastikan ada parameter course code nya")
+    @PutMapping("course")
+    public ResponseEntity<WebResponse<CourseResponseNoSubject>> updateCourse(
+            @RequestBody UpdateCourseRequest updateCourseRequest,
+            @RequestParam String courseCode,
+            HttpServletRequest request) {
+
+        //ambil nama dari Authorization Bearer
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        return ResponseEntity.ok(WebResponse.<CourseResponseNoSubject>builder()
+                .data(courseService.updateCourse(updateCourseRequest, username ,courseCode))
+                .build()
+        );
+    }
+
+    @Operation(summary = "Delete course with course code")
+    @DeleteMapping("course/{courseCode}")
+    public ResponseEntity<WebResponse<String>> deleteCourse(@PathVariable String courseCode) {
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        courseService.deleteCourse(courseCode, username);
+        return ResponseEntity.ok().body(WebResponse.<String>builder().data("OK").build());
+    }
+
     @Operation(summary = "Membuat subject, pastikan ada parameter course code nya")
     @PostMapping("subject")
     public ResponseEntity<WebResponse<SubjectResponse>> createModule(@RequestBody CreateSubjectRequest createSubjectRequest,
@@ -80,6 +108,23 @@ public class CourseController {
 
         return ResponseEntity.ok(WebResponse.<SubjectResponse>builder()
                 .data(courseService.createSubject(createSubjectRequest, username, courseCode))
+                .build()
+        );
+    }
+
+    @Operation(summary = "Edit subject or module with course code, pastikan ada parameter course code nya and subject code")
+    @PutMapping("subject")
+    public ResponseEntity<WebResponse<SubjectResponse>> updateModule(
+            @RequestParam String subjectCode,
+            @RequestBody UpdateSubjectRequest updateSubjectRequest,
+            @RequestParam(required = false) String courseCode,
+            HttpServletRequest request) {
+
+        //ambil nama dari Authorization Bearer
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        return ResponseEntity.ok(WebResponse.<SubjectResponse>builder()
+                .data(courseService.updateSubject(updateSubjectRequest, username , courseCode, subjectCode))
                 .build()
         );
     }
