@@ -1,5 +1,6 @@
 package com.finalproject.mooc.controller;
 
+import com.finalproject.mooc.model.responses.DasboardResponse;
 import com.finalproject.mooc.model.responses.WebResponse;
 import com.finalproject.mooc.service.DashboardService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,14 +18,14 @@ public class DashboardController {
     DashboardService dashboardService;
     @Operation(summary = "Menampilkan data dashboard")
     @PutMapping("/dashboard-data")
-    ResponseEntity<WebResponse<String>> showDashboardData(){
+    ResponseEntity<WebResponse<DasboardResponse>> showDashboardData(){
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
         dashboardService.cekhasilQuery(username);
 
-        return ResponseEntity.ok(WebResponse.<String>builder()
-                .data("fungsinya dikasih disini")
+        return ResponseEntity.ok(WebResponse.<DasboardResponse>builder()
+                .data(dashboardService.cekhasilQuery(username))
                 .build());
     }
 }

@@ -2,7 +2,6 @@ package com.finalproject.mooc.service;
 
 import com.finalproject.mooc.entity.Course;
 import com.finalproject.mooc.entity.Order;
-import com.finalproject.mooc.entity.User;
 import com.finalproject.mooc.enums.CourseCategory;
 import com.finalproject.mooc.enums.CourseLevel;
 import com.finalproject.mooc.enums.PaidStatus;
@@ -41,7 +40,6 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     OrderRepository orderRepository;
 
-
     @Override
     public OrderStatusResponse showOrderFiltered(Integer page, List<CourseCategory> category, List<CourseLevel> courseLevel, List<TypePremium> typePremium, String keyword, String username) {
         return null;
@@ -65,7 +63,7 @@ public class OrderServiceImpl implements OrderService {
                 new ResponseStatusException(HttpStatus.BAD_REQUEST, "Course tidak ditemukan"));
 
         //validasi apabila course ternyata free
-        if(course.getTypePremium().equals(TypePremium.FREE))
+        if (course.getTypePremium().equals(TypePremium.FREE))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Course ini gratis, anda hanya perlu memulainya");
 
 
@@ -82,16 +80,25 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public OrderStatusResponse updatePaidStatus(String username, Integer idOrder, PaidStatus paidStatus) {
+        Order order = orderRepository.findById(idOrder)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order tidak ditemukan"));
+        order.setPaid(PaidStatus.SUDAH_BAYAR);
+        orderRepository.save(order);
+        return toOrderStatusResponse(orderRepository.save(order));
+    }
+
+    @Override
     public PaymentStatusPaginationResponse showPaymentStatusByFilterSearchPagination(String username, Integer page, List<CourseCategory> category, List<PaidStatus> paidStatus, String keyword) {
         log.info("PaymentStatusPagination bejalan");
         page -= 1; //halaman asli dari index 0
         //sementara size nya 3
         Pageable halaman = PageRequest.of(page, 3);
         Page<Order> orderPage = orderRepository.findOrderByTeacher(category, paidStatus, keyword, username, halaman)
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.BAD_REQUEST,"Data tidak ditemukan"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Data tidak ditemukan"));
 
         if (orderPage.getContent().isEmpty())
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Data tidak ditemukan");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Data tidak ditemukan");
 
         return toPaymentStatusPaginationResponse(orderPage);
     }
@@ -111,7 +118,7 @@ public class OrderServiceImpl implements OrderService {
     private List<OrderHistoryResponse> toOrderHistoryResponse(List<Order> orders) {
         return orders.stream().map(
                 order -> {
-                    Course course = orderRepository.findCourseFromOrder(order.getIdOrder()).orElseThrow(()->
+                    Course course = orderRepository.findCourseFromOrder(order.getIdOrder()).orElseThrow(() ->
                             new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ada kesalahan dalam menemukan course yang di order"));
 
                     return OrderHistoryResponse.builder()

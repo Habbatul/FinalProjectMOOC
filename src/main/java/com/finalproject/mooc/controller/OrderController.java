@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.PublicKey;
 import java.util.List;
 
 @RestController
@@ -36,5 +37,17 @@ public class OrderController {
         return ResponseEntity.ok(WebResponse.<List<OrderHistoryResponse>>builder()
                 .data(orderService.showOrderHistory(username))
                 .build());
+    }
+
+    @Operation(summary = "mengubah paid status (paidStatus awal adalah BELUM_BAYAR menjadi SUDAH_BAYAR")
+    @PostMapping("/order-updatePaidStatus")
+    public ResponseEntity<WebResponse<OrderStatusResponse>> updatePaidStatus(
+        @RequestParam Integer idOrder,
+        @RequestParam PaidStatus paidStatus){
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return ResponseEntity.ok(WebResponse.<OrderStatusResponse>builder()
+                        .data(orderService.updatePaidStatus(username, idOrder, paidStatus))
+                        .build());
     }
 }
