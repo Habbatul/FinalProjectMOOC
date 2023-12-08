@@ -7,6 +7,8 @@ import com.finalproject.mooc.enums.ERole;
 import com.finalproject.mooc.enums.TypePremium;
 import com.finalproject.mooc.model.requests.CreateCourseRequest;
 import com.finalproject.mooc.model.requests.CreateSubjectRequest;
+import com.finalproject.mooc.model.requests.UpdateCourseRequest;
+import com.finalproject.mooc.model.requests.UpdateSubjectRequest;
 import com.finalproject.mooc.model.responses.*;
 import com.finalproject.mooc.repository.*;
 import lombok.extern.slf4j.Slf4j;
@@ -66,6 +68,49 @@ public class CourseServiceImpl implements CourseService {
 
     @Transactional
     @Override
+    public CourseResponseNoSubject updateCourse(UpdateCourseRequest updateCourseRequest, String username, String courseCode) {
+        User user = userRepository.findUserByUsername(username).orElseThrow(()->
+                new ResponseStatusException(HttpStatus.BAD_REQUEST, "username tidak ditemukan"));
+
+        Course oldCourseId = courseRepository.findById(courseCode)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Course tidak ditemukan"));
+
+        Course courseUpdate = Course.builder()
+                .idCourse(courseCode)
+                .courseName((updateCourseRequest.getCourseName() != null && !updateCourseRequest.getCourseName().isEmpty()) ? updateCourseRequest.getCourseName() : oldCourseId.getCourseName())
+                .courseCategory((updateCourseRequest.getCourseCategory() != null) ? updateCourseRequest.getCourseCategory() : oldCourseId.getCourseCategory())
+                .courseLevel((updateCourseRequest.getCourseLevel() != null) ? updateCourseRequest.getCourseLevel() : oldCourseId.getCourseLevel())
+                .coursePrice((updateCourseRequest.getCoursePrice() != null) ? updateCourseRequest.getCoursePrice() : oldCourseId.getCoursePrice())
+                .courseAbout((updateCourseRequest.getCourseAbout() != null && !updateCourseRequest.getCourseAbout().isEmpty()) ? updateCourseRequest.getCourseAbout() : oldCourseId.getCourseAbout())
+                .courseFor((updateCourseRequest.getCourseFor() != null && !updateCourseRequest.getCourseFor().isEmpty()) ? updateCourseRequest.getCourseFor() : oldCourseId.getCourseFor())
+                .TypePremium((updateCourseRequest.getTypePremium() != null) ? updateCourseRequest.getTypePremium() : oldCourseId.getTypePremium())
+                .urlTele((updateCourseRequest.getUrlTele() != null && !updateCourseRequest.getUrlTele().isEmpty()) ? updateCourseRequest.getUrlTele() : oldCourseId.getUrlTele())
+                .user(user)
+                .build();
+
+        courseRepository.updateIdCourse(courseUpdate.getTypePremium(), courseUpdate.getCourseName(), courseUpdate.getCoursePrice(), courseUpdate.getCourseAbout(), courseUpdate.getCourseFor(), courseUpdate.getUrlTele(), courseUpdate.getCourseCategory(), courseUpdate.getCourseLevel(), courseCode);
+
+        return toCourseResponseNoSubject(courseUpdate);
+    }
+
+    @Transactional
+    @Override
+    public void deleteCourse(String courseCode, String username) {
+        userRepository.findUserByUsername(username).orElseThrow(()->
+                new ResponseStatusException(HttpStatus.BAD_REQUEST, "username tidak ditemukan"));
+
+        log.debug("Running service deleteCourse, kode");
+        if (courseRepository.existsById(courseCode)){
+            courseRepository.deleteById(courseCode);
+            log.info("Is success delete");
+        } else {
+            log.error("Course not found");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "course not found");
+        }
+    }
+
+    @Transactional
+    @Override
     public SubjectResponse createSubject(CreateSubjectRequest subjectRequest, String username, String courseCode) {
         Subject subject = Subject.builder()
                 .title(subjectRequest.getTitle())
@@ -85,6 +130,45 @@ public class CourseServiceImpl implements CourseService {
 
         return toSubjectResponse(subject);
     }
+
+    @Transactional
+    @Override
+    public SubjectResponse updateSubject(UpdateSubjectRequest updateSubjectRequest, String username, String courseCode, String subjectCode) {
+
+        userRepository.findUserByUsername(username).orElseThrow(()->
+                new ResponseStatusException(HttpStatus.BAD_REQUEST, "username tidak ditemukan"));
+
+        // Mengambil data subjek lama dari repository berdasarkan kode subjek
+        Subject oldSubject = subjectRepository.findById(subjectCode)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Subjek tidak ditemukan"));
+
+        // Memeriksa apakah kode kursus tidak kosong atau null
+        if (courseCode != null && !courseCode.isEmpty()) {
+            // Jika kode kursus tidak kosong, maka mengambil data kursus baru dari repository
+            Course course = courseRepository.findById(courseCode)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Kursus tidak ditemukan"));
+
+            oldSubject.setCourse(course);
+        }
+
+        // Membuat objek subjek baru berdasarkan data yang diterima dari permintaan pembaruan
+        Subject subjectUpdate = Subject.builder()
+                .idSubject(subjectCode)
+                .title((updateSubjectRequest.getTitle() != null && !updateSubjectRequest.getTitle().isEmpty()) ? updateSubjectRequest.getTitle() : oldSubject.getTitle())
+                .url((updateSubjectRequest.getUrl() != null && !updateSubjectRequest.getUrl().isEmpty()) ? updateSubjectRequest.getUrl() : oldSubject.getUrl())
+                .chapter((updateSubjectRequest.getChapter() != null) ? updateSubjectRequest.getChapter() : oldSubject.getChapter())
+                .sequence((updateSubjectRequest.getSequence() != null) ? updateSubjectRequest.getSequence() : oldSubject.getSequence())
+                .TypePremium(updateSubjectRequest.getTypePremium() != null ? updateSubjectRequest.getTypePremium() : oldSubject.getTypePremium())
+                .build();
+
+        // Menyimpan subjek yang diperbarui ke repository
+        subjectRepository.updateIdSubject(subjectUpdate.getTypePremium(),subjectUpdate.getChapter(),subjectUpdate.getSequence(),subjectUpdate.getTitle(),subjectUpdate.getUrl(),oldSubject.getCourse(), subjectCode);
+
+
+        // Mengonversi subjek yang diperbarui ke respons subjek dan mengembalikannya
+        return toSubjectResponse(subjectUpdate);
+    }
+
 
     @Transactional(readOnly = true)
     @Override
