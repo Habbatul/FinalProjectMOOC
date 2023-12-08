@@ -22,7 +22,7 @@ public class DashboardController {
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        dashboardService.cekhasilQuery(username);
+//        dashboardService.cekhasilQuery(username);
 
         return ResponseEntity.ok(WebResponse.<DasboardResponse>builder()
                 .data(dashboardService.cekhasilQuery(username))

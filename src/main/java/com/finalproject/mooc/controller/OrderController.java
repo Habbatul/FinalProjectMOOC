@@ -42,12 +42,11 @@ public class OrderController {
     @Operation(summary = "mengubah paid status (paidStatus awal adalah BELUM_BAYAR menjadi SUDAH_BAYAR")
     @PostMapping("/order-updatePaidStatus")
     public ResponseEntity<WebResponse<OrderStatusResponse>> updatePaidStatus(
-        @RequestParam Integer idOrder,
-        @RequestParam PaidStatus paidStatus){
+            @RequestParam String courseCode){
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return ResponseEntity.ok(WebResponse.<OrderStatusResponse>builder()
-                        .data(orderService.updatePaidStatus(username, idOrder, paidStatus))
+                        .data(orderService.updatePaidStatus(username, courseCode))
                         .build());
     }
 }
