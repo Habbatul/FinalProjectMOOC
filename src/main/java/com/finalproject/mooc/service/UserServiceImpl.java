@@ -3,7 +3,6 @@ package com.finalproject.mooc.service;
 import com.finalproject.mooc.entity.RegisterOtp;
 import com.finalproject.mooc.entity.ResetPassword;
 import com.finalproject.mooc.entity.User;
-import com.finalproject.mooc.enums.ERole;
 import com.finalproject.mooc.model.requests.ResetPasswordRequest;
 import com.finalproject.mooc.model.requests.UpdateUserPassword;
 import com.finalproject.mooc.model.requests.UpdateUserRequest;
@@ -26,10 +25,6 @@ import javax.mail.MessagingException;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service

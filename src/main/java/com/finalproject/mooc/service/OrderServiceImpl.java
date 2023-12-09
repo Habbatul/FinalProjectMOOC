@@ -2,7 +2,6 @@ package com.finalproject.mooc.service;
 
 import com.finalproject.mooc.entity.*;
 import com.finalproject.mooc.enums.CourseCategory;
-import com.finalproject.mooc.enums.CourseLevel;
 import com.finalproject.mooc.enums.PaidStatus;
 import com.finalproject.mooc.enums.TypePremium;
 import com.finalproject.mooc.model.requests.CreateOrderRequest;
@@ -43,10 +42,10 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     SubjectProgressRepository subjectProgressRepository;
 
-    @Override
-    public OrderStatusResponse showOrderFiltered(Integer page, List<CourseCategory> category, List<CourseLevel> courseLevel, List<TypePremium> typePremium, String keyword, String username) {
-        return null;
-    }
+//    @Override
+//    public OrderStatusResponse showOrderFiltered(Integer page, List<CourseCategory> category, List<CourseLevel> courseLevel, List<TypePremium> typePremium, String keyword, String username) {
+//        return null;
+//    }
 
     @Transactional(readOnly = true)
     @Override

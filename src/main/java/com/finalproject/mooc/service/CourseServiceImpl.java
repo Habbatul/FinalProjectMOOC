@@ -277,7 +277,7 @@ public class CourseServiceImpl implements CourseService {
 
 
     private CourseResponseWithSubject toCourseResponseWithSubject(Course course, List<Subject> subjects, Set<ERole> role, String username) {
-        List<SubjectResponse> subjectResponseList = new ArrayList<>();
+        List<SubjectResponse> subjectResponseList;
 
         //jika role admin ijinkan lihat semua
         if(role.contains(ERole.ADMIN)){

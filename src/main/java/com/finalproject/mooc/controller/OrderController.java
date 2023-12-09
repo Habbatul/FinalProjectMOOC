@@ -1,7 +1,5 @@
 package com.finalproject.mooc.controller;
 
-import com.finalproject.mooc.enums.CourseCategory;
-import com.finalproject.mooc.enums.PaidStatus;
 import com.finalproject.mooc.model.requests.CreateOrderRequest;
 import com.finalproject.mooc.model.responses.*;
 import com.finalproject.mooc.service.OrderService;
