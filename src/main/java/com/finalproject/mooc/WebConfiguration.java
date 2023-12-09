@@ -7,7 +7,11 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+//@EnableAsync
 @Configuration
 public class WebConfiguration {
 
@@ -55,4 +59,16 @@ public class WebConfiguration {
                 .components(new Components().addSecuritySchemes("Authorization", securityScheme))
                 .addSecurityItem(securityRequirement);
     }
+
+
+//    @Bean(name = "asyncTaskExecutor")
+//    public TaskExecutor asyncTaskExecutor() {
+//        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+//        executor.setCorePoolSize(3);
+//        executor.setMaxPoolSize(5);
+//        executor.setQueueCapacity(10);
+//        executor.setThreadNamePrefix("HanThread-");
+//        executor.initialize();
+//        return executor;
+//    }
 }
