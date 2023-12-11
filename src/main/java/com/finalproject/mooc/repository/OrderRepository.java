@@ -47,4 +47,9 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
                                                             @Param("keyword") String keyword,
                                                             @Param("teacher") String teacher,
                                                             Pageable pageable);
+
+
+    @Query("SELECT o FROM Order o WHERE o.user.username = :username AND o.course.idCourse = :courseId")
+    Optional<Order> findOrderByUserIdAndCourseCode(@Param("username") String username,
+                                                   @Param("courseId") String courseCode);
 }

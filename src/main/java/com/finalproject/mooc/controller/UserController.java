@@ -36,7 +36,6 @@ public class UserController {
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
     public ResponseEntity<WebResponse<String>> updateProfile(
-            HttpServletRequest request,
             @ModelAttribute UpdateUserRequest userRequest,
             BindingResult result) {
         try {
@@ -51,8 +50,7 @@ public class UserController {
     @Operation(summary = "Mengupdate password user untuk user yang sedang login")
     @PutMapping(value = "user/password",
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<WebResponse<String>> updatePassword(HttpServletRequest request,
-                                                              @RequestBody UpdateUserPassword passwordReq){
+    public ResponseEntity<WebResponse<String>> updatePassword(@RequestBody UpdateUserPassword passwordReq){
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 

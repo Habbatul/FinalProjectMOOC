@@ -12,12 +12,13 @@ import com.finalproject.mooc.model.responses.PaymentStatusPaginationResponse;
 import java.util.List;
 
 public interface OrderService {
-    OrderStatusResponse showOrderFiltered(Integer page, List<CourseCategory> category, List<CourseLevel> courseLevel, List<TypePremium> typePremium, String keyword, String username);
+//    OrderStatusResponse showOrderFiltered(Integer page, List<CourseCategory> category, List<CourseLevel> courseLevel, List<TypePremium> typePremium, String keyword, String username);
 
     List<OrderHistoryResponse> showOrderHistory(String username);
 
     OrderStatusResponse orderCourse(String username, CreateOrderRequest orderRequest);
 
+    OrderStatusResponse updatePaidStatus(String username, String courseCode);
 
     PaymentStatusPaginationResponse showPaymentStatusByFilterSearchPagination(String username, Integer page, List<CourseCategory> category, List<PaidStatus> paidStatus, String keyword);
 }
