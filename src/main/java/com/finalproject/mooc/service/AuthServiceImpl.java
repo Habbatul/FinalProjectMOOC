@@ -150,6 +150,8 @@ public class AuthServiceImpl implements AuthService {
         registerOtp.setOtpGenerateTime(LocalDateTime.now());
         user.addRegisterOtp(registerOtp);
         user.setIsActive(false);
+
+        userRepository.save(user);
         registerOtpRepository.save(registerOtp);
 
         try {
@@ -157,9 +159,6 @@ public class AuthServiceImpl implements AuthService {
         } catch (MessagingException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to send OTP please try again");
         }
-
-
-        userRepository.save(user);
 
         return WebResponse.<String>builder()
                 .data("User registered successfully")
