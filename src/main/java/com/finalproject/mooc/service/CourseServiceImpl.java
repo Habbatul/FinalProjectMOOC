@@ -111,7 +111,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Transactional
     @Override
-    public SubjectResponse createSubject(CreateSubjectRequest subjectRequest, String username, String courseCode) {
+    public SubjectDetail createSubject(CreateSubjectRequest subjectRequest, String username, String courseCode) {
         Subject subject = Subject.builder()
                 .title(subjectRequest.getTitle())
                 .url(subjectRequest.getUrl())
@@ -133,7 +133,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Transactional
     @Override
-    public SubjectResponse updateSubject(UpdateSubjectRequest updateSubjectRequest, String username, String courseCode, String subjectCode) {
+    public SubjectDetail updateSubject(UpdateSubjectRequest updateSubjectRequest, String username, String courseCode, String subjectCode) {
 
         userRepository.findUserByUsername(username).orElseThrow(()->
                 new ResponseStatusException(HttpStatus.BAD_REQUEST, "username tidak ditemukan"));
@@ -238,8 +238,8 @@ public class CourseServiceImpl implements CourseService {
 
 
     //semua helper ada dibawah ini
-    private SubjectResponse toSubjectResponse(Subject subject) {
-        return SubjectResponse.builder()
+    private SubjectDetail toSubjectResponse(Subject subject) {
+        return SubjectDetail.builder()
                 .subjectCode(subject.getIdSubject())
                 .title(subject.getTitle())
                 .url(subject.getUrl())
@@ -250,14 +250,14 @@ public class CourseServiceImpl implements CourseService {
     }
 
     //pembatasan untuk limit url modul bila user belum membeli course premium
-    private SubjectResponse toSubjectResponseLimitUrl(Subject subject, String courseCode, String username) {
+    private SubjectDetail toSubjectResponseLimitUrl(Subject subject, String courseCode, String username) {
         //cek apakah tipe module premium
         if(subject.getTypePremium().equals(TypePremium.PREMIUM)){
             log.info("Module ini PREMIUM");
             //cek apakah sudah membayar
             if(orderRepository.findIsPremiumPaid(username, courseCode)){
                 log.info("User ini sudah membayar");
-                return SubjectResponse.builder()
+                return SubjectDetail.builder()
                         .subjectCode(subject.getIdSubject())
                         .title(subject.getTitle())
                         .url(subject.getUrl())
@@ -268,7 +268,7 @@ public class CourseServiceImpl implements CourseService {
             }
             else{
                 log.info("User ini belum membayar");
-                return SubjectResponse.builder()
+                return SubjectDetail.builder()
                         .subjectCode(subject.getIdSubject())
                         .title(subject.getTitle())
                         .url("ANDA BELUM MEMBELI KELAS INI (Beri Url untuk redirect ke video dibatasi)")
@@ -280,7 +280,7 @@ public class CourseServiceImpl implements CourseService {
 
         } else{
             log.info("Module ini tidak PREMIUM");
-            return SubjectResponse.builder()
+            return SubjectDetail.builder()
                     .subjectCode(subject.getIdSubject())
                     .title(subject.getTitle())
                     .url(subject.getUrl())
@@ -293,38 +293,47 @@ public class CourseServiceImpl implements CourseService {
 
 
     private CourseResponseWithSubject toCourseResponseWithSubject(Course course, List<Subject> subjects, Set<ERole> role, String username) {
-        List<SubjectResponse> subjectResponseList;
+        Map<String, List<SubjectDetail>> subjectDetailMap;
 
         //jika role admin ijinkan lihat semua
-        if(role.contains(ERole.ADMIN)){
-            subjectResponseList = subjects.stream()
-                    .sorted(Comparator.comparingInt(Subject::getSequence)) //sorted berdasarkan sequence subject/module
-                    .map(this::toSubjectResponse)
-                    .collect(Collectors.toList());
-        }
-        //jika role bukan admin cek apakah sudah order
-        else{
-            subjectResponseList = subjects.stream()
-                    .sorted(Comparator.comparingInt(Subject::getSequence)) //sorted berdasarkan sequence subject/module
-                    .map(subject -> toSubjectResponseLimitUrl(subject, course.getIdCourse(),username))
-                    .collect(Collectors.toList());
+        if (role.contains(ERole.ADMIN)) {
+            subjectDetailMap = subjects.stream()
+                    .sorted(Comparator.comparingInt(Subject::getSequence))
+                    //grouping berdasarkan subject berdasarkan chapter,
+                    //gunakan linkedhashmap agar urutan sequence menjadi perhatian (jadi cara kerjanya mempertahankan urutan sebelum masuk ke map)
+                    .collect(Collectors.groupingBy(Subject::getChapter, LinkedHashMap::new, Collectors.mapping(this::toSubjectResponse, Collectors.toList())));
+        } else {
+            subjectDetailMap = subjects.stream()
+                    .sorted(Comparator.comparingInt(Subject::getSequence))
+                    //grouping berdasarkan subject berdasarkan chapter,
+                    //gunakan linkedhashmap agar urutan sequence menjadi perhatian
+                    .collect(Collectors.groupingBy(Subject::getChapter, LinkedHashMap::new, Collectors.mapping(subject -> toSubjectResponseLimitUrl(subject, course.getIdCourse(), username), Collectors.toList())));
         }
 
-        //mapping course nya pakek fungsi konversi ke subjectResponse
+        List<Subjects<SubjectDetail>> subjectDetailList = subjectDetailMap.entrySet().stream()
+                .map(entry -> Subjects.<SubjectDetail>builder()
+                        .chapter(entry.getKey())
+                        .detail(entry.getValue())
+                        .build())
+                .collect(Collectors.toList());
+
+        // Mapping course nya pakek fungsi konversi ke subjectResponse
         return CourseResponseWithSubject.builder()
                 .teacher(course.getUser().getUsername())
                 .courseCode(course.getIdCourse())
                 .courseName(course.getCourseName())
                 .courseCategory(course.getCourseCategory())
-                .TypePremium(course.getTypePremium())
+                .courseLevel(course.getCourseLevel())
                 .coursePrice(course.getCoursePrice())
+                .TypePremium(course.getTypePremium())
                 .courseAbout(course.getCourseAbout())
                 .courseFor(course.getCourseFor())
-                .courseLevel(course.getCourseLevel())
                 .urlTele(course.getUrlTele())
-                .subjects(subjectResponseList)
+                .subjects(subjectDetailList)
                 .build();
     }
+
+
 
     private CourseResponseNoSubject toCourseResponseNoSubject(Course course) {
         return CourseResponseNoSubject.builder()

@@ -16,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 
@@ -61,8 +60,7 @@ public class CourseController {
     @Operation(summary = "Membuat course tanpa subject")
     @PostMapping("course")
     public ResponseEntity<WebResponse<CourseCreateResponse>> createCourse(
-            @RequestBody CreateCourseRequest courseRequest,
-            HttpServletRequest request) {
+            @RequestBody CreateCourseRequest courseRequest) {
 
         //ambil nama dari Authorization Bearer
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -77,8 +75,7 @@ public class CourseController {
     @PutMapping("course")
     public ResponseEntity<WebResponse<CourseResponseNoSubject>> updateCourse(
             @RequestBody UpdateCourseRequest updateCourseRequest,
-            @RequestParam String courseCode,
-            HttpServletRequest request) {
+            @RequestParam String courseCode) {
 
         //ambil nama dari Authorization Bearer
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -101,12 +98,12 @@ public class CourseController {
 
     @Operation(summary = "Membuat subject, pastikan ada parameter course code nya")
     @PostMapping("subject")
-    public ResponseEntity<WebResponse<SubjectResponse>> createModule(@RequestBody CreateSubjectRequest createSubjectRequest,
-                                                                     @RequestParam String courseCode) {
+    public ResponseEntity<WebResponse<SubjectDetail>> createModule(@RequestBody CreateSubjectRequest createSubjectRequest,
+                                                                   @RequestParam String courseCode) {
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        return ResponseEntity.ok(WebResponse.<SubjectResponse>builder()
+        return ResponseEntity.ok(WebResponse.<SubjectDetail>builder()
                 .data(courseService.createSubject(createSubjectRequest, username, courseCode))
                 .build()
         );
@@ -114,16 +111,15 @@ public class CourseController {
 
     @Operation(summary = "Edit subject or module with course code, pastikan ada parameter course code nya and subject code")
     @PutMapping("subject")
-    public ResponseEntity<WebResponse<SubjectResponse>> updateModule(
+    public ResponseEntity<WebResponse<SubjectDetail>> updateModule(
             @RequestParam String subjectCode,
             @RequestBody UpdateSubjectRequest updateSubjectRequest,
-            @RequestParam(required = false) String courseCode,
-            HttpServletRequest request) {
+            @RequestParam(required = false) String courseCode) {
 
         //ambil nama dari Authorization Bearer
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        return ResponseEntity.ok(WebResponse.<SubjectResponse>builder()
+        return ResponseEntity.ok(WebResponse.<SubjectDetail>builder()
                 .data(courseService.updateSubject(updateSubjectRequest, username , courseCode, subjectCode))
                 .build()
         );

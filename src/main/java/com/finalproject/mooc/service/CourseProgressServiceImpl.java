@@ -17,7 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -171,16 +173,32 @@ public class CourseProgressServiceImpl implements CourseProgressService {
                 .build();
     }
 
-    private List<ProgressSubjectResponse> toProgressSubjectResponseList(List<SubjectProgress> subjectProgressList){
-        return subjectProgressList.stream()
-                .sorted(Comparator.comparingInt(v-> v.getSubject().getSequence()))
+    private List<Subjects<ProgressSubjectDetail>> toProgressSubjectResponseList(List<SubjectProgress> subjectProgressList) {
+        Map<String, List<ProgressSubjectDetail>> progressSubjectMap = subjectProgressList.stream()
+                //urutkan berdasarkan sequence
+                .sorted(Comparator.comparingInt(v -> v.getSubject().getSequence()))
                 .map(this::toProgressSubjectResponse)
+                //gunakan linkedhashmap agar urutan sequence menjadi perhatian (jadi cara kerjanya mempertahankan urutan sebelum masuk ke map)
+                .collect(Collectors.groupingBy(ProgressSubjectDetail::getChapter, LinkedHashMap::new, Collectors.toList()));
+
+        return progressSubjectMap.entrySet().stream()
+                .map(entry -> Subjects.<ProgressSubjectDetail>builder()
+                        .chapter(entry.getKey())
+                        .detail(entry.getValue())
+                        .build())
                 .collect(Collectors.toList());
     }
 
-    private ProgressSubjectResponse toProgressSubjectResponse(SubjectProgress subjectProgress) {
+//    private List<ProgressSubjectDetail> toProgressSubjectResponseList(List<SubjectProgress> subjectProgressList){
+//        return subjectProgressList.stream()
+//                .sorted(Comparator.comparingInt(v-> v.getSubject().getSequence()))
+//                .map(this::toProgressSubjectResponse)
+//                .collect(Collectors.toList());
+//    }
+
+    private ProgressSubjectDetail toProgressSubjectResponse(SubjectProgress subjectProgress) {
         Subject subject = subjectProgress.getSubject();
-        return ProgressSubjectResponse.builder()
+        return ProgressSubjectDetail.builder()
                 .subjectCode(subject.getIdSubject())
                 .title(subject.getTitle())
                 .url(subject.getUrl())

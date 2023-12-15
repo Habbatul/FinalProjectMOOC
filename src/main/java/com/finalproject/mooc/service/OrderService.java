@@ -5,6 +5,7 @@ import com.finalproject.mooc.enums.CourseLevel;
 import com.finalproject.mooc.enums.PaidStatus;
 import com.finalproject.mooc.enums.TypePremium;
 import com.finalproject.mooc.model.requests.CreateOrderRequest;
+import com.finalproject.mooc.model.requests.UpdateOrderRequest;
 import com.finalproject.mooc.model.responses.OrderHistoryResponse;
 import com.finalproject.mooc.model.responses.OrderStatusResponse;
 import com.finalproject.mooc.model.responses.PaymentStatusPaginationResponse;
@@ -18,7 +19,7 @@ public interface OrderService {
 
     OrderStatusResponse orderCourse(String username, CreateOrderRequest orderRequest);
 
-    OrderStatusResponse updatePaidStatus(String username, String courseCode);
+    OrderStatusResponse updatePaidStatus(String username, String courseCode, UpdateOrderRequest updateOrderRequest);
 
     PaymentStatusPaginationResponse showPaymentStatusByFilterSearchPagination(String username, Integer page, List<CourseCategory> category, List<PaidStatus> paidStatus, String keyword);
 }

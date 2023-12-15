@@ -77,6 +77,7 @@ public class UserServiceImpl implements UserService{
                     .phoneNumber((userRequest.getPhoneNumber() != null) ? userRequest.getPhoneNumber() : user.getPhoneNumber())
                     .password(user.getPassword())
                     .roles(user.getRoles())
+                    .isActive(user.getIsActive())
                     .build();
 
         userRepository.save(saveuser);

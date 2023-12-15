@@ -15,6 +15,6 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class CreateOrderRequest {
-    private String orderMethod;
+//    private String orderMethod;
     private String courseCode;
 }

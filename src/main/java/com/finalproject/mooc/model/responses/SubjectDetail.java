@@ -8,11 +8,11 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 @Builder
-public class SubjectResponse {
+public class SubjectDetail {
     private String subjectCode;
     private String title;
     private String url;
-    private Integer chapter;
+    private String chapter;
     private Integer sequence;
     private TypePremium TypePremium;
 }

@@ -23,5 +23,5 @@ public class CourseResponseWithSubject {
     private String courseAbout;
     private String courseFor;
     private String urlTele;
-    private List<SubjectResponse> subjects;
+    private List<Subjects<SubjectDetail>> subjects;
 }

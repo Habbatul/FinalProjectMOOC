@@ -23,6 +23,6 @@ public class ProgressCourseResponse {
     private String courseAbout;
     private String courseFor;
     private String urlTele;
-    private List<ProgressSubjectResponse> progressSubject;
+    private List<Subjects<ProgressSubjectDetail>> progressSubject;
     private String progressBar;
 }

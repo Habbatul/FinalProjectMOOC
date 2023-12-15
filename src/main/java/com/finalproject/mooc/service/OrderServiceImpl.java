@@ -5,6 +5,7 @@ import com.finalproject.mooc.enums.CourseCategory;
 import com.finalproject.mooc.enums.PaidStatus;
 import com.finalproject.mooc.enums.TypePremium;
 import com.finalproject.mooc.model.requests.CreateOrderRequest;
+import com.finalproject.mooc.model.requests.UpdateOrderRequest;
 import com.finalproject.mooc.model.responses.OrderHistoryResponse;
 import com.finalproject.mooc.model.responses.OrderStatusResponse;
 import com.finalproject.mooc.model.responses.PaymentStatusPaginationResponse;
@@ -73,7 +74,6 @@ public class OrderServiceImpl implements OrderService {
 
         Order order = Order.builder()
                 .orderDate(LocalDateTime.now().truncatedTo(ChronoUnit.MICROS))
-                .orderMethod(orderRequest.getOrderMethod())
                 .paid(PaidStatus.BELUM_BAYAR)
                 .course(course)
                 .user(userRepository.findUserByUsername(username).orElseThrow(() ->
@@ -85,10 +85,11 @@ public class OrderServiceImpl implements OrderService {
 
     @Transactional
     @Override
-    public OrderStatusResponse updatePaidStatus(String username, String courseCode) {
+    public OrderStatusResponse updatePaidStatus(String username, String courseCode, UpdateOrderRequest updateOrderRequest) {
         Order order = orderRepository.findOrderByUserIdAndCourseCode(username, courseCode)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order tidak ditemukan"));
         order.setPaid(PaidStatus.SUDAH_BAYAR);
+        order.setOrderMethod(updateOrderRequest.getPaymentMethod());
         orderRepository.save(order);
 
 

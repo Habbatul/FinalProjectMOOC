@@ -13,7 +13,7 @@ import lombok.Getter;
 public class UpdateSubjectRequest {
     private String title;
     private String url;
-    private Integer chapter;
+    private String chapter;
     private Integer sequence;
     private TypePremium typePremium;
 }
