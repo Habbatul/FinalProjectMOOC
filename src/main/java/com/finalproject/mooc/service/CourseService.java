@@ -17,6 +17,7 @@ public interface CourseService {
     void deleteCourse(String courseCode, String username);
     SubjectResponse createSubject(CreateSubjectRequest createSubjectRequest, String username, String courseCode);
     SubjectResponse updateSubject(UpdateSubjectRequest updateSubjectRequest, String username, String courseCode, String subjectCode);
+    void deleteSubject(String subjectCode, String username);
     CoursePaginationResponse<CourseResponseNoSubject> showCourseByCategoryOrLevelOrPremiumAndSearch(Integer page, List<CourseCategory> category, List<CourseLevel> courseLevel, List<TypePremium> typePremium, String keyword, String username);
     CourseResponseWithSubject showDetailCourse(String courseCode, String username);
     ManageCoursePaginationResponse showManageCourseByFilterSearchPagination(String username, Integer page, List<CourseCategory> category, List<CourseLevel> courseLevel, List<TypePremium> typePremium, String keyword);

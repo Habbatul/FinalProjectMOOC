@@ -169,6 +169,22 @@ public class CourseServiceImpl implements CourseService {
         return toSubjectResponse(subjectUpdate);
     }
 
+    @Transactional
+    @Override
+    public void deleteSubject(String subjectCode, String username) {
+        userRepository.findUserByUsername(username).orElseThrow(()->
+                new ResponseStatusException(HttpStatus.BAD_REQUEST, "username tidak ditemukan"));
+
+        log.debug("Running service deleteSubject, kode");
+        if (subjectRepository.existsById(subjectCode)){
+            subjectRepository.deleteById(subjectCode);
+            log.info("Is success delete");
+        } else {
+            log.error("Subject not found");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "course not found");
+        }
+    }
+
 
     @Transactional(readOnly = true)
     @Override
