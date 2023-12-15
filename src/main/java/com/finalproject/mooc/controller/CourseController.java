@@ -129,6 +129,16 @@ public class CourseController {
         );
     }
 
+    @Operation(summary = "Delete course with course code")
+    @DeleteMapping("subject/{subjectCode}")
+    public ResponseEntity<WebResponse<String>> deleteSubject(@PathVariable String subjectCode) {
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        courseService.deleteSubject(subjectCode, username);
+        return ResponseEntity.ok().body(WebResponse.<String>builder().data("OK").build());
+    }
+
 //tak Gabungin gaes ternyata bisa pakek query jadi lebih simple gaperlu ita itu
 
 //    @GetMapping("/course")
