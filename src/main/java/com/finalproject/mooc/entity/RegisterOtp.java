@@ -17,14 +17,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 public class RegisterOtp {
-
     @Id
     private String otp;
-
     private LocalDateTime otpGenerateTime;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
 }

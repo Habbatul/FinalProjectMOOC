@@ -150,7 +150,6 @@ public class AuthServiceImpl implements AuthService {
         registerOtp.setOtpGenerateTime(LocalDateTime.now());
         user.addRegisterOtp(registerOtp);
         user.setIsActive(false);
-
         userRepository.save(user);
         registerOtpRepository.save(registerOtp);
 
