@@ -16,4 +16,8 @@ public interface SubjectRepository extends JpaRepository<Subject, String> {
             "SET s.TypePremium=:TypePremium, s.chapter=:chapter, s.sequence=:sequence, s.title=:title, s.url=:url, s.course=:courseCode " +
             "WHERE s.idSubject=:idSubject")
     void updateIdSubject(@Param("TypePremium") TypePremium typePremium, @Param("chapter") String chapter, @Param("sequence") Integer sequence, @Param("title") String title, @Param("url") String url, @Param("courseCode") Course courseCode, @Param("idSubject") String idSubject);
+
+    @Query("SELECT COUNT(s) > 0 FROM Subject s WHERE s.sequence = :sequence AND s.course.idCourse = :courseCode")
+    Boolean sequenceIsExistInCourse(@Param("sequence") Integer sequence, @Param("courseCode")String courseCode);
+
 }

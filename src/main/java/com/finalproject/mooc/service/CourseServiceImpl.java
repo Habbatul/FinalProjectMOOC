@@ -112,6 +112,10 @@ public class CourseServiceImpl implements CourseService {
     @Transactional
     @Override
     public SubjectDetail createSubject(CreateSubjectRequest subjectRequest, String username, String courseCode) {
+
+        if(subjectRepository.sequenceIsExistInCourse(subjectRequest.getSequence(), courseCode))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "pastikan urutan subject berbeda");
+
         Subject subject = Subject.builder()
                 .title(subjectRequest.getTitle())
                 .url(subjectRequest.getUrl())
@@ -137,6 +141,9 @@ public class CourseServiceImpl implements CourseService {
 
         userRepository.findUserByUsername(username).orElseThrow(()->
                 new ResponseStatusException(HttpStatus.BAD_REQUEST, "username tidak ditemukan"));
+
+        if(subjectRepository.sequenceIsExistInCourse(updateSubjectRequest.getSequence(), courseCode))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "pastikan urutan subject berbeda");
 
         // Mengambil data subjek lama dari repository berdasarkan kode subjek
         Subject oldSubject = subjectRepository.findById(subjectCode)
