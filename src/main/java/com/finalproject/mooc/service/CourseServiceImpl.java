@@ -203,7 +203,7 @@ public class CourseServiceImpl implements CourseService {
         log.info("CoursePagination bejalan");
         page -= 1; //halaman asli dari index 0
         //sementara size nya 3
-        Pageable halaman = PageRequest.of(page, 3);
+        Pageable halaman = PageRequest.of(page, 8);
         Page<Course> coursePage = courseRepository.findCourseByCategoryAndLevel(categories, courseLevel, typePremium, keyword, halaman)
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.BAD_REQUEST,"Data tidak ditemukan"));
 
@@ -233,7 +233,7 @@ public class CourseServiceImpl implements CourseService {
         log.info("ManageCoursePagination bejalan");
         page -= 1; //halaman asli dari index 0
         //sementara size nya 3
-        Pageable halaman = PageRequest.of(page, 3);
+        Pageable halaman = PageRequest.of(page, 8);
         Page<Course> coursePage = courseRepository.findCourseByAdmin(category, courseLevel, typePremium, keyword, username, halaman)
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.BAD_REQUEST,"Data tidak ditemukan"));
 
