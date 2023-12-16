@@ -41,6 +41,14 @@ public class CourseProgressServiceImpl implements CourseProgressService {
     @Override
     @Transactional(readOnly = true)
     public ProgressCourseResponse showProgressCourseByUsernameAndCourseCode(String username, String courseCode){
+        //untuk verifikasi apakah user sudah mendaftar course
+        Course course = courseRepository.findById(courseCode).orElseThrow(
+                ()->new ResponseStatusException(HttpStatus.BAD_REQUEST, "Course yang dipilih tidak ada"));
+        User user = userRepository.findUserByUsername(username).orElseThrow(
+                ()-> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Anda belum login atau user tidak ditemukan"));
+        if(!courseProgressRepository.findCourseProgressExist(user, course))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Course ini belum anda mulai");
+
         CourseProgress courseProgress= courseProgressRepository.showCourseProgress(username, courseCode).orElseThrow(()->
                 new ResponseStatusException(HttpStatus.BAD_REQUEST, "User belum mengambil course ini"));
 
@@ -82,17 +90,18 @@ public class CourseProgressServiceImpl implements CourseProgressService {
 
         //validasi apakah sudah membayar jika tipe course nya premium
         if(course.getTypePremium().equals(TypePremium.PREMIUM)){
-            if(!orderRepository.findIsPremiumPaid(username, courseCode)){
-                log.info("Belum membayar kelas, seharusnya melakukan throw dan tidak menyimpan course");
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tidak dapat mengikuti kelas, anda belum membayar course ini");
-            }
+//            if(!orderRepository.findIsPremiumPaid(username, courseCode)){
+                log.info("Ini bersifat berbayar beli course terlebih dahulu");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tidak dapat mengikuti kelas berbayar langsung");
+//            }
         }
 
         User user = userRepository.findUserByUsername(username).orElseThrow(
                 ()-> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Anda belum login atau user tidak ditemukan"));
 
+        //untuk verifikasi apakah user sudah mendaftar course
         if(courseProgressRepository.findCourseProgressExist(user, course)){
-            log.info("apakah Progress sudah pernah didaftarkan : {}", courseProgressRepository.findCourseProgressExist(user, course));
+//            log.info("apakah Progress sudah pernah didaftarkan : {}", courseProgressRepository.findCourseProgressExist(user, course));
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Course Sudah didaftarkan sebelumnya");
         }
 
