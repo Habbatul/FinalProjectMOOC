@@ -1,14 +1,12 @@
 package com.finalproject.mooc.model.requests;
 
 import com.finalproject.mooc.enums.TypePremium;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
+import lombok.*;
 
 @Data
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class UpdateSubjectRequest {
     private String title;

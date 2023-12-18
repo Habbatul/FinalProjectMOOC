@@ -3,16 +3,14 @@ package com.finalproject.mooc.model.requests;
 import com.finalproject.mooc.enums.CourseCategory;
 import com.finalproject.mooc.enums.CourseLevel;
 import com.finalproject.mooc.enums.TypePremium;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 
 @Data
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class UpdateCourseRequest {
     private String courseName;

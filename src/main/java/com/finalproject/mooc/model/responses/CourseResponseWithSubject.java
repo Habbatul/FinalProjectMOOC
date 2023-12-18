@@ -6,11 +6,13 @@ import com.finalproject.mooc.enums.TypePremium;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class CourseResponseWithSubject {
     private String teacher;

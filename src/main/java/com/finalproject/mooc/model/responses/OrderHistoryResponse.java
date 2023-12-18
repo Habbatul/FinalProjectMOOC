@@ -6,10 +6,12 @@ import com.finalproject.mooc.enums.PaidStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class OrderHistoryResponse {
     private String courseCode;

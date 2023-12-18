@@ -1,15 +1,13 @@
 package com.finalproject.mooc.model.requests;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
+import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class UpdateUserRequest {
     private String emailAddress;
