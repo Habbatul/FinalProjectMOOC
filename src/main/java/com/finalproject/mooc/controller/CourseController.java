@@ -125,7 +125,7 @@ public class CourseController {
         );
     }
 
-    @Operation(summary = "Delete course with course code")
+    @Operation(summary = "Delete subject with subject code")
     @DeleteMapping("subject/{subjectCode}")
     public ResponseEntity<WebResponse<String>> deleteSubject(@PathVariable String subjectCode) {
 
