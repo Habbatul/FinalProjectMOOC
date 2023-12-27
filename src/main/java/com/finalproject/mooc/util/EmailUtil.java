@@ -51,7 +51,7 @@ public class EmailUtil {
 
     public void sendOtpEmailResetPassword(String email, String token) throws MessagingException {
         // nantinya ganti url disini
-        String resetPasswordUrl = "http://localhost:8080/coba.html?resetToken=" + token;
+        String resetPasswordUrl = "https://mooc.code69.my.id/coba.html?resetToken=" + token;
         String htmlContent =  "<div style=\"font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2\">" +
                 "    <div style=\"margin:50px auto;width:80%%;padding:20px 0\">" +
                 "        <div style=\"border-bottom:5px solid #eee\">" +

@@ -1,0 +1,3 @@
+## System Design
+<p align="justify">Deployment dilakukan dengan menggunakan VPS dengan Ubuntu OS. Pada server terinstall JDK, dimana aplikasi jar akan dijalankan dengan menggunakan JRE. Sedangkan untuk mengakses melalui http method akan dihandle oleh Nginx dengan Reverse Proxy melalui alamat yang sudah dipointing ke ip server. Server juga sudah dipasang SSL sehingga komunikasi lebih aman. Kemudian untuk database yang digunakan adalah PostgreSQL. Port 8082 adalah aplikasi Back End dengan Spring Boot (Spring Boot sudah memiliki embeded tomcat sehingga hanya perlu melakukan running jar). Kemudian untuk database berada pada port 5432.</p><br><br>
+<img src="System Design Final Proyek.png">
