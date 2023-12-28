@@ -7,24 +7,38 @@ import com.finalproject.mooc.model.requests.ResetPasswordRequest;
 import com.finalproject.mooc.model.requests.UpdateUserPassword;
 import com.finalproject.mooc.model.requests.UpdateUserRequest;
 import com.finalproject.mooc.model.responses.UserResponse;
+import com.finalproject.mooc.model.security.UserDetailsImpl;
 import com.finalproject.mooc.repository.RegisterOtpRepository;
 import com.finalproject.mooc.repository.ResetPasswordRepository;
 import com.finalproject.mooc.repository.UserRepository;
+import com.finalproject.mooc.security.JwtUtil;
 import com.finalproject.mooc.service.media.CloudinaryService;
+import com.finalproject.mooc.service.security.UserDetailsServiceImpl;
 import com.finalproject.mooc.util.EmailUtil;
 import com.finalproject.mooc.util.OtpUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.mail.MessagingException;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -51,16 +65,26 @@ public class UserServiceImpl implements UserService{
     @Autowired
     private RegisterOtpRepository registerOtpRepository;
 
+    //untuk generate token baru setelah ubah password dan profile
+    @Autowired
+    JwtUtil jwtUtils;
+
+    @Autowired
+    UserDetailsServiceImpl userDetailsService;
+
+    @Autowired
+    AuthenticationManager authenticationManager;
 
     @Transactional
     @Override
-    public void updateProfile(String username, UpdateUserRequest userRequest) throws IOException {
+    public String updateProfile(String username, UpdateUserRequest userRequest) throws IOException {
         String imageUrl;
 
         User user = userRepository.findUserByUsername(username).orElseThrow(()->
                 new ResponseStatusException(HttpStatus.BAD_REQUEST, "User tidak ditemukan"));
 
-        if(userRequest.getFile() != null) {
+        Optional<MultipartFile> userRequestFile = Optional.ofNullable(userRequest.getFile());
+        if(userRequestFile.isPresent()) {
             if(user.getUrlPhoto() != null) cloudinaryService.deleteFile(user.getUrlPhoto());
             imageUrl = cloudinaryService.uploadFile(userRequest.getFile());
         } else{
@@ -74,13 +98,25 @@ public class UserServiceImpl implements UserService{
                     .emailAddress((userRequest.getEmailAddress() != null && !userRequest.getEmailAddress().isEmpty()) ? userRequest.getEmailAddress() : user.getEmailAddress())
                     .city((userRequest.getCity() != null && !userRequest.getCity().isEmpty()) ? userRequest.getCity() : user.getCity())
                     .country((userRequest.getCountry() != null && !userRequest.getCountry().isEmpty()) ? userRequest.getCountry() : user.getCountry())
-                    .phoneNumber((userRequest.getPhoneNumber() != null) ? userRequest.getPhoneNumber() : user.getPhoneNumber())
+                    .phoneNumber((userRequest.getPhoneNumber() != null && !userRequest.getPhoneNumber().isEmpty()) ? userRequest.getPhoneNumber() : user.getPhoneNumber())
                     .password(user.getPassword())
                     .roles(user.getRoles())
                     .isActive(user.getIsActive())
                     .build();
 
         userRepository.save(saveuser);
+
+        //membuat objek Authentication baru dengan username yang diubah, disini token berubah
+        if ((userRequest.getUsername() != null && !userRequest.getUsername().isEmpty())) {
+            UserDetails userDetails = userDetailsService.loadUserByUsername(saveuser.getUsername());
+            Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            if(!user.getUsername().equals(userRequest.getUsername())) return "Username berubah, pastikan update token";
+        }
+
+
+        return "Username tidak berubah, tidak perlu merubah token";
     }
 
     @Transactional
@@ -116,7 +152,7 @@ public class UserServiceImpl implements UserService{
                 .orElseThrow(()->new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not found with this email: " + email));
 
         if (user.getRegisterOtp().get(0).getOtp().equals(otp) &&
-                Duration.between(user.getRegisterOtp().get(0).getOtpGenerateTime(), LocalDateTime.now()).getSeconds() < (2 * 60)) {
+                Duration.between(user.getRegisterOtp().get(0).getOtpGenerateTime(), LocalDateTime.now()).getSeconds() < (4 * 60)) {
 
             user.setIsActive(true);
             userRepository.save(user);
@@ -124,7 +160,7 @@ public class UserServiceImpl implements UserService{
             return "OTP verified, you can log in";
         }
 
-        return "Please regenerate OTP and try again";
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Please regenerate OTP and try again");
     }
 
     /*
