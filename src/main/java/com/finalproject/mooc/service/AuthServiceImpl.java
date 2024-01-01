@@ -185,6 +185,7 @@ public class AuthServiceImpl implements AuthService {
                 emailAddress(signupRequest.getEmail()).
                 password(passwordEncoder.encode(signupRequest.getPassword())).
                 phoneNumber(signupRequest.getPhoneNumber()).
+                isActive(true).
         build();
 
         Set<Roles> roles = new HashSet<>();
