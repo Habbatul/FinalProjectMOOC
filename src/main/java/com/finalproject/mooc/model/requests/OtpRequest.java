@@ -8,6 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class OtpRequest {
+
     String email;
     String Otp;
 }

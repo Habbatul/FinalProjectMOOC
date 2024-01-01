@@ -12,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class CoursePaginationResponse<T> {
+
     List<T> courseList;
     Integer productCurrentPage;
     Integer productTotalPage;

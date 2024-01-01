@@ -13,6 +13,7 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @Builder
 public class UpdateCourseRequest {
+
     private String courseName;
     @NotBlank
     private CourseCategory courseCategory;

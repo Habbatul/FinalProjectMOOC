@@ -17,6 +17,7 @@ import java.util.List;
 @Entity
 @Table(name = "subject")
 public class Subject {
+
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")

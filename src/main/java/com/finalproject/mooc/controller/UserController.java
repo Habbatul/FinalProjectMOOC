@@ -8,12 +8,10 @@ import com.finalproject.mooc.model.responses.WebResponse;
 import com.finalproject.mooc.security.JwtUtil;
 import com.finalproject.mooc.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
-import org.apache.catalina.security.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -35,7 +33,7 @@ public class UserController {
         return ResponseEntity.ok(WebResponse.<UserResponse>builder().data(userService.showUserByUsername(username)).build());
     }
 
-//gunakan BindingResult dibawah modelAttribute agar File bisa null
+    //gunakan BindingResult dibawah modelAttribute agar File bisa null
     @Operation(summary = "(Jenis : Multipart-Form-Data) Mengedit profile beserta foto profil, tidak akan diupdate untuk field yang kosong")
     @PutMapping(value = "user/profile",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
@@ -60,6 +58,7 @@ public class UserController {
                     WebResponse.<UpdateUserResponse>builder().error("Failed to update profile").build());
         }
     }
+
     @Operation(summary = "Mengupdate password user untuk user yang sedang login")
     @PutMapping(value = "user/password",
             consumes = MediaType.APPLICATION_JSON_VALUE)

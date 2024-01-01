@@ -63,7 +63,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional(readOnly = true)
     @Override
     public JwtResponse authenticateUser(LoginRequest login, HttpServletResponse response) {
-        //sementara gini dulu
+
         User user = userRepository.findUserByEmailAddress(login.getEmailAddress())
                 .orElseThrow(()->new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User dengan email tidak ditemukan"));
 
@@ -109,9 +109,7 @@ public class AuthServiceImpl implements AuthService {
                 emailAddress(signupRequest.getEmail()).
                 password(passwordEncoder.encode(signupRequest.getPassword())).
                 phoneNumber(signupRequest.getPhoneNumber()).
-//                roles(new HashSet<>(Collections.singletonList(Roles.builder().roleName(ERole.USER).build()))).
                 build();
-
 
         //pakai ini untuk deafult Role User
         Set<Roles> roles = new HashSet<>();
@@ -119,28 +117,6 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, " Role is not found"));
         roles.add(role);
         user.setRoles(roles);
-
-//        Set<String> strRoles = signupRequest.getRole();
-//        Set<Roles> roles = new HashSet<>();
-//
-//        try {
-//            if (strRoles == null) {
-//                Roles role = roleRepository.findByRoleName(ERole.USER)
-//                        .orElseThrow(() -> new RuntimeException("Error: Role is not found"));
-//                roles.add(role);
-//            } else {
-//                strRoles.forEach(role -> {
-//                    Roles roles1 = roleRepository.findByRoleName(ERole.valueOf(role))
-//                            .orElseThrow(() -> new RuntimeException("Error: Role " + role + " is not found"));
-//                    roles.add(roles1);
-//                });
-//            }
-//
-//            user.setRoles(roles);
-//        } catch (IllegalArgumentException e) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ada kesalahan pada Role");
-//        }
-
 
         //kupindah bawah biar kalo kena validasi ga ngirim otp
         String otp = otpUtil.generateOtp();
@@ -185,6 +161,7 @@ public class AuthServiceImpl implements AuthService {
                 emailAddress(signupRequest.getEmail()).
                 password(passwordEncoder.encode(signupRequest.getPassword())).
                 phoneNumber(signupRequest.getPhoneNumber()).
+                isActive(true).
         build();
 
         Set<Roles> roles = new HashSet<>();

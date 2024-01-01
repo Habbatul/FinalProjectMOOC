@@ -7,15 +7,14 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class PaymentStatusPaginationResponse {
 
-    List<PaymentStatusResponse> paymentStatusResponses;
-    Integer productCurrentPage;
-    Integer productTotalPage;
+    private List<PaymentStatusResponse> paymentStatusResponses;
+    private Integer productCurrentPage;
+    private Integer productTotalPage;
 
 }

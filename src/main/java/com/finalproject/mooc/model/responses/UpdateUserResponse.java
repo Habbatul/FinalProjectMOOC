@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class UpdateUserResponse {
+
     private String Token;
     private String Type;
     private String isUsernameChanged;

@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 public class Config {
 
     @Value("OrderController")
-    private String namaKelas; // ""
+    private String namaKelas;
 
     Config(RoleRepository roleRepository) {
         log.info("Cheking roles presented");

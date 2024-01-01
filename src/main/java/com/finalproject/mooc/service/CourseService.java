@@ -12,17 +12,23 @@ import com.finalproject.mooc.model.responses.*;
 import java.util.List;
 
 public interface CourseService {
+
     CourseCreateResponse createCourse(CreateCourseRequest courseRequest, String username);
+
     CourseResponseNoSubject updateCourse(UpdateCourseRequest updateCourseRequest, String username, String courseCode);
+
     void deleteCourse(String courseCode, String username);
+
     SubjectDetail createSubject(CreateSubjectRequest createSubjectRequest, String username, String courseCode);
+
     SubjectDetail updateSubject(UpdateSubjectRequest updateSubjectRequest, String username, String courseCode, String subjectCode);
+
     void deleteSubject(String subjectCode, String username);
+
     CoursePaginationResponse<CourseResponseNoSubject> showCourseByCategoryOrLevelOrPremiumAndSearch(Integer page, List<CourseCategory> category, List<CourseLevel> courseLevel, List<TypePremium> typePremium, String keyword, String username);
+
     CourseResponseWithSubject showDetailCourse(String courseCode, String username);
+
     ManageCoursePaginationResponse showManageCourseByFilterSearchPagination(String username, Integer page, List<CourseCategory> category, List<CourseLevel> courseLevel, List<TypePremium> typePremium, String keyword);
 
-//    CoursePaginationResponse showCourse(Integer page, String username);
-//    CoursePaginationResponse showCourseBySearch(Integer page, String title, String username);
-//    CoursePaginationResponse showCourseList(Integer page, List<CourseCategory> category, Integer page, String title, String username)
 }

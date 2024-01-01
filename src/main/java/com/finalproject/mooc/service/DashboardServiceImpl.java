@@ -9,8 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class DashboardServiceImpl implements DashboardService {
+
     @Autowired
     CourseProgressRepository courseProgressRepository;
+
     @Autowired
     CourseRepository courseRepository;
 
@@ -19,7 +21,6 @@ public class DashboardServiceImpl implements DashboardService {
         Integer activeUser = courseProgressRepository.countActiveUser(userAdmin);
         Integer activeClass =courseRepository.countActiveClass(userAdmin);
         Integer activePremium =courseRepository.countPremiumClass(userAdmin);
-//        System.out.println("Active user : "+activeUser+"\nActive Class : "+activeClass+"\nPremium Class : "+activePremium);
 
         return DasboardResponse.builder()
                 .activeUser(activeUser)

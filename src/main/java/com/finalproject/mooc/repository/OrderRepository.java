@@ -2,7 +2,6 @@ package com.finalproject.mooc.repository;
 
 import com.finalproject.mooc.entity.Course;
 import com.finalproject.mooc.entity.Order;
-import com.finalproject.mooc.entity.User;
 import com.finalproject.mooc.enums.CourseCategory;
 import com.finalproject.mooc.enums.PaidStatus;
 import org.springframework.data.domain.Page;
@@ -10,7 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.security.core.parameters.P;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,14 +27,6 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     @Query("SELECT c FROM  Order o JOIN o.course c WHERE o.idOrder = :idOrder")
     Optional<Course> findCourseFromOrder(@Param("idOrder") Integer idOrder);
 
-    @Query("SELECT o FROM Order o WHERE " +
-            "( (o.course.courseCategory IN :category) OR :category IS NULL) AND " +
-            "( (o.paid IN :paidStatus) OR :paidStatus IS NULL) AND " +
-            "((LOWER(o.course.courseName) LIKE LOWER(CONCAT('%',:keyword, '%'))) OR :keyword IS NULL)")
-    Optional<Page<Order>> findOrderByFilterSearchPagination(@Param("category") List<CourseCategory> category,
-                                                            @Param("paidStatus") List<PaidStatus> paidStatus,
-                                                            @Param("keyword") String keyword,
-                                                            Pageable pageable);
 
     @Query("SELECT o FROM Order o LEFT JOIN o.course c WHERE c.user.username = :teacher AND" +
             "( (o.course.courseCategory IN :category) OR :category IS NULL) AND " +

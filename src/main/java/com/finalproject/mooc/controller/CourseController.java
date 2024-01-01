@@ -18,17 +18,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
-//sementara yak guys belum bikin Response DTO nya aku
-
-
 @RestController
 @Slf4j
 public class CourseController {
+
     @Autowired
     private CourseService courseService;
-
-    //sementara
 
     @Operation(summary = "Menampilkan list course dengan filter (Category, Level, dan Premium) serta fitur searching dan pagination")
     @GetMapping("/course")
@@ -134,24 +129,5 @@ public class CourseController {
         courseService.deleteSubject(subjectCode, username);
         return ResponseEntity.ok().body(WebResponse.<String>builder().data("OK").build());
     }
-
-//tak Gabungin gaes ternyata bisa pakek query jadi lebih simple gaperlu ita itu
-
-//    @GetMapping("/course")
-//    public ResponseEntity<CoursePaginationResponse> showCourse(
-//            @RequestParam(required = false, defaultValue = "1") Integer page,
-//            @RequestParam(required = false) String username) {
-//
-//        return ResponseEntity.ok(courseService.showCourse(page, username));
-//    }
-//
-//    @GetMapping("/course-search")
-//    public ResponseEntity<CoursePaginationResponse> showCourseBySearch(
-//            @RequestParam(required = false, defaultValue = "1") Integer page,
-//            @RequestParam String title,
-//            @RequestParam(required = false) String username) {
-//
-//        return ResponseEntity.ok(courseService.showCourseBySearch(page, title, username));
-//    }
 
 }

@@ -19,6 +19,7 @@ import java.util.List;
 @Entity
 @Table(name = "course")
 public class Course {
+
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
@@ -53,5 +54,4 @@ public class Course {
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<CourseProgress> courseProgresses;
 
-    //id_user
 }

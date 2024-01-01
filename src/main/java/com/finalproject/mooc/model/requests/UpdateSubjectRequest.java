@@ -9,6 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class UpdateSubjectRequest {
+
     private String title;
     private String url;
     private String chapter;

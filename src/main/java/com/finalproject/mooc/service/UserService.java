@@ -8,12 +8,19 @@ import com.finalproject.mooc.model.responses.UserResponse;
 import java.io.IOException;
 
 public interface UserService {
+
     String updateProfile(String username, UpdateUserRequest userRequest) throws IOException;
+
     void updatePassword(String username, UpdateUserPassword passwordRequest);
+
     void resetPassword(ResetPasswordRequest passwordRequest);
+
     void makeTokenResetPassword(String emailAddress);
+
     UserResponse showUserByUsername(String username);
+
     String verifyAccount(String email, String otp);
+
     String regenerateOtp(String email);
 
 }

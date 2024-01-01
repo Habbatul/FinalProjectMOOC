@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
 @Component
@@ -50,26 +48,4 @@ public class JwtUtil {
         return false;
     }
 
-//
-//    //fungsi ekstraktor token cek cookies kalo ga ada berarti ambil dari header
-//    public String extractToken(HttpServletRequest request) {
-//        //coba mengambil token dari cookies
-//        Cookie[] cookies = request.getCookies();
-//        if (cookies != null) {
-//            for (Cookie cookie : cookies) {
-//                if ("token".equals(cookie.getName())) {
-//                    return cookie.getValue();
-//                }
-//            }
-//        }
-//
-//        //jika tidak ada token dalam cookies, coba dari header "Authorization"
-//        String authorizationHeader = request.getHeader("Authorization");
-//        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-//            //mulai dari 7 karena ada bearer
-//            return authorizationHeader.substring(7);
-//        }
-//
-//        return null;
-//    }
 }

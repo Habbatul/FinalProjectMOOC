@@ -8,7 +8,9 @@ import com.finalproject.mooc.model.responses.auth.JwtResponse;
 import javax.servlet.http.HttpServletResponse;
 
 public interface AuthService {
+
     JwtResponse authenticateUser(LoginRequest login, HttpServletResponse response);
+
     WebResponse<String> registerUser(SignupRequest signupRequest);
 
     WebResponse<String> registerAdmin(SignupRequest signupRequest);

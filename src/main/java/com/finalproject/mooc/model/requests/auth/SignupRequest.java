@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -24,9 +23,6 @@ public class SignupRequest {
 
     @NotBlank
     private String phoneNumber;
-
-//Register hanya untuk user, sehingga ga perlu role
-//    private Set<String> role;
 
     @NotBlank
     @Size(min = 6, max = 20)
