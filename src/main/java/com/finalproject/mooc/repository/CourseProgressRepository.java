@@ -9,15 +9,14 @@ import com.finalproject.mooc.enums.TypePremium;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface CourseProgressRepository extends JpaRepository<CourseProgress, Integer> {
+
     @Query("SELECT cp FROM CourseProgress cp LEFT JOIN cp.user WHERE (cp.user.username = :username) AND cp.course.idCourse = :courseCode")
     Optional<CourseProgress> showCourseProgress(@Param("username")String username, @Param("courseCode")String courseCode);
 

@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class DashboardController {
+
     @Autowired
     DashboardService dashboardService;
+
     @Operation(summary = "Menampilkan data dashboard")
     @GetMapping("/dashboard-data")
     ResponseEntity<WebResponse<DasboardResponse>> showDashboardData(){

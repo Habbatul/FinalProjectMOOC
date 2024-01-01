@@ -8,13 +8,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class CourseCreateResponse {
+
     private String teacher;
     private String courseCode;
     private String courseName;

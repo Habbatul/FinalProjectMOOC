@@ -27,18 +27,23 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class CourseServiceImpl implements CourseService {
+
     @Autowired
     CourseRepository courseRepository;
+
     @Autowired
     SubjectRepository subjectRepository;
+
     @Autowired
     UserRepository userRepository;
+
     @Autowired
     OrderRepository orderRepository;
 
     //kebutuhan intergrasi course yang diambil
     @Autowired
     SubjectProgressRepository subjectProgressRepository;
+
     @Autowired
     CourseProgressRepository courseProgressRepository;
 
@@ -218,7 +223,6 @@ public class CourseServiceImpl implements CourseService {
     public CourseResponseWithSubject showDetailCourse(String courseCode, String username) {
         Course course = courseRepository.findCourseJoinSubject(courseCode)
                 .orElseThrow(()->new ResponseStatusException(HttpStatus.BAD_REQUEST, "Course Tidak Ditemukan"));
-        //pakek fungsi CourseResponseWithSubject, maka keajaiban akan terjadi uehe
 
         List<Subject> subjects = course.getSubjects();
 
@@ -362,7 +366,6 @@ public class CourseServiceImpl implements CourseService {
         List<Course> courseResponses = coursePage.getContent();
 
         //mapping course nya pakek fungsi konversi ke courseResponse
-        //toCourseResponseNoSubject (course, totalModul)
         List<CourseResponseNoSubject> courseResponseNoSubjectList = courseResponses.stream()
                 .map(this::toCourseResponseNoSubject)
                 .collect(Collectors.toList());
@@ -431,40 +434,3 @@ public class CourseServiceImpl implements CourseService {
     }
 
 }
-
-
-
-//    /**
-//     * Funsgi ini ternyata gabisa untuk pagination, karena harus showAll
-//     */
-//    private List<Course> getUniqueFromJoinResult(List<Course> courses) {
-//        return new ArrayList<>(courses.stream()
-//                // Membuat perulangan hanya sekali bila id sama
-//                .collect(Collectors.toMap(Course::getIdCourse, course -> course,
-//                        (existing, replacement) -> existing))
-//                .values());
-//    }
-
-//    @Transactional(readOnly = true)
-//    @Override
-//    public CoursePaginationResponse showCourse(Integer page, String username) {
-//        page -= 1;
-//        Pageable halaman = PageRequest.of(page, 3);
-//        Page<Course> coursePage = courseRepository.findAll(halaman);
-//
-//        return toCoursePaginationResponse(coursePage);
-//    }
-
-//
-//    @Transactional(readOnly = true)
-//    @Override
-//    public CoursePaginationResponse showCourseBySearch(Integer page, String title, String username) {
-//        page -= 1;
-//        Pageable halaman = PageRequest.of(page, 3);
-//        Page<Course> coursePage = courseRepository.searchCourse(title, halaman)
-//                .orElseThrow(()-> new ResponseStatusException(HttpStatus.BAD_REQUEST,"Data tidak ditemukan"));
-//
-//        return toCoursePaginationResponse(coursePage);
-//    }
-
-

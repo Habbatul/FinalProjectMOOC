@@ -16,11 +16,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CourseRepository extends JpaRepository<Course, String> {
-//    @Query("SELECT DISTINCT c FROM Course c INNER JOIN c.subjects s WHERE UPPER(c.courseCategory) IN :categories")
-//    Optional<Page<Course>> findCourseByCategory(@Param("categories") List<CourseCategory> category, Pageable pageable);
-
-//    @Query("SELECT c FROM Course c WHERE UPPER(c.courseCategory) IN :categories")
-//    Optional<Page<Course>> findCourseByCategory(@Param("categories") List<CourseCategory> category, Pageable pageable);
 
     /**
      * Untuk filter Kategory dan Level (dengan salah satu antara level atau kategory atau juga bisa filter gabungan keduanya)
@@ -54,16 +49,12 @@ public interface CourseRepository extends JpaRepository<Course, String> {
     @Query("SELECT COUNT(s) FROM Course c JOIN c.subjects s WHERE c.idCourse = :courseCode")
     Integer findTotalModule(@Param("courseCode") String courseCode);
 
-
     //untuk dashboard
     @Query("SELECT COUNT(c) from Course c LEFT JOIN c.user u WHERE u.username = :teacher")
     Integer countActiveClass(@Param("teacher")String teacher);
 
     @Query("SELECT COUNT(c) from Course c LEFT JOIN c.user u WHERE u.username = :teacher AND c.TypePremium = 'PREMIUM'")
     Integer countPremiumClass(@Param("teacher")String teacher);
-
-//    @Query("SELECT c FROM Course c WHERE LOWER(c.courseName) LIKE LOWER(CONCAT('%',:keyword, '%'))")
-//    Optional<Page<Course>> searchCourse(@Param("keyword") String keyword, Pageable pageable);
 
     @Transactional
     @Modifying

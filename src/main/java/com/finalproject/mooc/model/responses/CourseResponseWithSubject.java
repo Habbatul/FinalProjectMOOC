@@ -15,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class CourseResponseWithSubject {
+
     private String teacher;
     private String courseCode;
     private String courseName;

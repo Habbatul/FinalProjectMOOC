@@ -26,27 +26,24 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 @Slf4j
 @Service
 public class OrderServiceImpl implements OrderService {
 
     @Autowired
     UserRepository userRepository;
+
     @Autowired
     CourseRepository courseRepository;
+
     @Autowired
     OrderRepository orderRepository;
 
     @Autowired
     CourseProgressRepository courseProgressRepository;
+
     @Autowired
     SubjectProgressRepository subjectProgressRepository;
-
-//    @Override
-//    public OrderStatusResponse showOrderFiltered(Integer page, List<CourseCategory> category, List<CourseLevel> courseLevel, List<TypePremium> typePremium, String keyword, String username) {
-//        return null;
-//    }
 
     @Transactional(readOnly = true)
     @Override
@@ -92,17 +89,14 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderMethod(updateOrderRequest.getPaymentMethod());
         orderRepository.save(order);
 
-
         //tambahkan ke progress course user bila paid status sudah_bayar
         CourseProgress userCourse = CourseProgress.builder()
                 .user(userRepository.findUserByUsername(username).orElseThrow(()->
                         new ResponseStatusException(HttpStatus.BAD_REQUEST, "username tidak ditemukan")))
                 .course(order.getCourse())
                 .build();
-//        userCourse.setSubjectProgresses(subjectToSubjectProgress(order.getCourse().getSubjects(), userCourse));
         courseProgressRepository.save(userCourse);
         subjectProgressRepository.saveAll(subjectToSubjectProgress(order.getCourse().getSubjects(), userCourse));
-
 
         return toOrderStatusResponse(orderRepository.save(order));
     }

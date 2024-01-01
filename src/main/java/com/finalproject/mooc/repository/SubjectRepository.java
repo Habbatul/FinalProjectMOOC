@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface SubjectRepository extends JpaRepository<Subject, String> {
+
     @Transactional
     @Modifying
     @Query("UPDATE Subject s " +

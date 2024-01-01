@@ -1,6 +1,5 @@
 package com.finalproject.mooc.entity;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 public class CourseProgress {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

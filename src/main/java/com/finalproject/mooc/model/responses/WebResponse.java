@@ -1,6 +1,5 @@
 package com.finalproject.mooc.model.responses;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

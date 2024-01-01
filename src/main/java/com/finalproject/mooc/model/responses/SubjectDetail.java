@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class SubjectDetail {
+
     private String subjectCode;
     private String title;
     private String url;

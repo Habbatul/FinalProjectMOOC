@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 public class RegisterOtp {
+
     @Id
     private String otp;
     private LocalDateTime otpGenerateTime;

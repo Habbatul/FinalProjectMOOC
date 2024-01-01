@@ -1,13 +1,10 @@
 package com.finalproject.mooc.security;
 
-
-import com.finalproject.mooc.enums.ERole;
 import com.finalproject.mooc.service.security.UserDetailsServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -18,7 +15,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
 
 
 /***
@@ -38,11 +34,6 @@ public class WebSecurityConfig {
     @Autowired
     AuthEntryPointJwt unauthorizedHandler;
 
-//   gausah makek manager nya bikin sendiri aja
-//    public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-//        authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-//    }
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
@@ -59,13 +50,12 @@ public class WebSecurityConfig {
         return http.build();
     }
 
-
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
         return new AuthTokenFilter();
     }
 
-    //manager buatan sendiri tanap webconfigureradapter
+    //manager buatan sendiri tanpa webconfigureradapter
 
     /***
      * Sebenarnya parameter ada 4 tapi karena sudah didefinisikan dengan method

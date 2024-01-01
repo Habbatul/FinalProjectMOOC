@@ -25,16 +25,22 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class CourseProgressServiceImpl implements CourseProgressService {
+
     @Autowired
     UserRepository userRepository;
+
     @Autowired
     OrderRepository orderRepository;
+
     @Autowired
     CourseRepository courseRepository;
+
     @Autowired
     SubjectRepository subjectRepository;
+
     @Autowired
     CourseProgressRepository courseProgressRepository;
+
     @Autowired
     SubjectProgressRepository subjectProgressRepository;
 
@@ -90,10 +96,8 @@ public class CourseProgressServiceImpl implements CourseProgressService {
 
         //validasi apakah sudah membayar jika tipe course nya premium
         if(course.getTypePremium().equals(TypePremium.PREMIUM)){
-//            if(!orderRepository.findIsPremiumPaid(username, courseCode)){
                 log.info("Ini bersifat berbayar beli course terlebih dahulu");
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tidak dapat mengikuti kelas berbayar langsung");
-//            }
         }
 
         User user = userRepository.findUserByUsername(username).orElseThrow(
@@ -101,7 +105,6 @@ public class CourseProgressServiceImpl implements CourseProgressService {
 
         //untuk verifikasi apakah user sudah mendaftar course
         if(courseProgressRepository.findCourseProgressExist(user, course)){
-//            log.info("apakah Progress sudah pernah didaftarkan : {}", courseProgressRepository.findCourseProgressExist(user, course));
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Course Sudah didaftarkan sebelumnya");
         }
 
@@ -126,7 +129,6 @@ public class CourseProgressServiceImpl implements CourseProgressService {
         List<CourseProgress> courseResponses = coursePage.getContent();
 
         //mapping course nya pakek fungsi konversi ke courseResponse
-        //toCourseResponseNoSubject (course, totalModul)
         List<ProgressCourseNoSubject> courseProgressList= courseResponses.stream()
                 .map(this::toProgressCourseNoSubject)
                 .collect(Collectors.toList());
@@ -198,13 +200,6 @@ public class CourseProgressServiceImpl implements CourseProgressService {
                 .collect(Collectors.toList());
     }
 
-//    private List<ProgressSubjectDetail> toProgressSubjectResponseList(List<SubjectProgress> subjectProgressList){
-//        return subjectProgressList.stream()
-//                .sorted(Comparator.comparingInt(v-> v.getSubject().getSequence()))
-//                .map(this::toProgressSubjectResponse)
-//                .collect(Collectors.toList());
-//    }
-
     private ProgressSubjectDetail toProgressSubjectResponse(SubjectProgress subjectProgress) {
         Subject subject = subjectProgress.getSubject();
         return ProgressSubjectDetail.builder()
@@ -217,7 +212,6 @@ public class CourseProgressServiceImpl implements CourseProgressService {
                 .isDone(subjectProgress.getIsDone())
                 .build();
     }
-
 
     private CourseProgress courseToCourseProgress(Course course, User user){
         CourseProgress courseProgress = CourseProgress.builder()

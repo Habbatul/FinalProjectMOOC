@@ -12,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class Subjects<T>{
+
     private String chapter;
     private List<T> detail;
 }

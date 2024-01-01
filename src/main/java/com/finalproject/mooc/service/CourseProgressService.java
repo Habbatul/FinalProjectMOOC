@@ -12,11 +12,14 @@ import java.util.List;
 public interface CourseProgressService {
 
     ProgressCourseResponse showProgressCourseByUsernameAndCourseCode(String username, String courseCode);
+
     CoursePaginationResponse<ProgressCourseNoSubject> showProgressCourseListByUsername(String username, List<CourseCategory> categories,
                                                                                        List<CourseLevel> courseLevels,
                                                                                        List<TypePremium> typePremiums,
                                                                                        String keyword, Integer page);
+
     ProgressCourseNoSubject startCourse(String username, String courseCode);
+
     void editDoneCourse(String username, String subjectCode);
 
 }

@@ -10,6 +10,7 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @Builder
 public class UpdateUserPassword {
+
     @NotBlank
     private String oldPassword;
     @NotBlank

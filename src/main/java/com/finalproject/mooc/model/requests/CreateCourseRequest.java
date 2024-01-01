@@ -3,9 +3,7 @@ package com.finalproject.mooc.model.requests;
 import com.finalproject.mooc.enums.CourseCategory;
 import com.finalproject.mooc.enums.CourseLevel;
 import com.finalproject.mooc.enums.TypePremium;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-
 
 @Data
 @Getter
@@ -13,6 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class CreateCourseRequest {
+
     private String courseName;
     private CourseCategory courseCategory;
     private TypePremium TypePremium;

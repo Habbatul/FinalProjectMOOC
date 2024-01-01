@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class DasboardResponse {
-    Integer activeUser;
-    Integer activeClass;
-    Integer premiumClass;
+
+    private Integer activeUser;
+    private Integer activeClass;
+    private Integer premiumClass;
 }

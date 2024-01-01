@@ -7,14 +7,10 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.task.TaskExecutor;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-//@EnableAsync
 @Configuration
 public class WebConfiguration {
 
@@ -36,21 +32,36 @@ public class WebConfiguration {
                                 "username anda </b>" +
 
                                 "<br><br> <b>USER</b> : <br>" +
+                                "POST /course-progress/start-course<br>" +
+                                "POST /order<br>" +
+                                "POST /order-updatePaidStatus<br>" +
                                 "PUT /user/profile<br>" +
                                 "PUT /user/password<br>" +
+                                "PUT /course-progress/subject-done<br>" +
                                 "GET /user<br>" +
+                                "GET /course-progress<br>" +
+                                "GET /course-progress/list<br>" +
+                                "GET /order/history<br>" +
 
                                 "<br><b>ADMIN:</b><br>" +
                                 "POST /course<br>" +
                                 "POST /subject<br>" +
                                 "PUT /course<br>" +
                                 "PUT /subject<br>" +
+                                "DELETE /subject/{subjectCode}<br>" +
+                                "DELETE /course/{courseCode}<br>" +
+                                "GET /admin/payment-status<br>" +
+                                "GET /admin/manage-course<br>" +
+                                "GET /dashboard-data<br>" +
 
                                 "<br><b>ALL PERMIT : </b> <br>" +
                                 "POST /auth/signup<br>" +
+                                "POST /auth/signup/admin<br>" +
                                 "POST /auth/signin<br>" +
-                                "GET /forget-password/generate-token<br>" +
-                                "GET /forget-password/reset<br>" +
+                                "POST /regenerate-otp<br>" +
+                                "POST /forget-password/generate-token<br>" +
+                                "PUT /verify-account<br>" +
+                                "PUT /forget-password/reset<br>" +
                                 "GET /course-detail<br>" +
                                 "GET /course<br>" +
                                 "<br><br>Kunjungi beberapa URL di bawah ini untuk portofolio/proyek saya lainnya:" +
@@ -75,14 +86,4 @@ public class WebConfiguration {
         return new CorsFilter(source);
     }
 
-//    @Bean(name = "asyncTaskExecutor")
-//    public TaskExecutor asyncTaskExecutor() {
-//        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-//        executor.setCorePoolSize(3);
-//        executor.setMaxPoolSize(5);
-//        executor.setQueueCapacity(10);
-//        executor.setThreadNamePrefix("HanThread-");
-//        executor.initialize();
-//        return executor;
-//    }
 }

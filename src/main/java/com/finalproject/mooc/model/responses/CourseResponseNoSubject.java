@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class CourseResponseNoSubject {
+
     private String courseCode;
     private String courseName;
     private CourseCategory courseCategory;

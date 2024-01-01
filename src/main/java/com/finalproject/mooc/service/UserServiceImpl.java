@@ -7,7 +7,6 @@ import com.finalproject.mooc.model.requests.ResetPasswordRequest;
 import com.finalproject.mooc.model.requests.UpdateUserPassword;
 import com.finalproject.mooc.model.requests.UpdateUserRequest;
 import com.finalproject.mooc.model.responses.UserResponse;
-import com.finalproject.mooc.model.security.UserDetailsImpl;
 import com.finalproject.mooc.repository.RegisterOtpRepository;
 import com.finalproject.mooc.repository.ResetPasswordRepository;
 import com.finalproject.mooc.repository.UserRepository;
@@ -22,9 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,9 +33,7 @@ import javax.mail.MessagingException;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -244,7 +239,6 @@ public class UserServiceImpl implements UserService{
                         ()-> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email tidak ditemukan")))
                 .build();
         resetPasswordRepository.save(token);
-
 
         //lakukan logic untuk kirim email disini kirimkan url Front-End dan berikan parameter token
         //example : <a href= www.example.com/forget-password/{resetToken}>Tekan disini untuk reset password</a>

@@ -7,14 +7,13 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class ManageCoursePaginationResponse {
 
-    List<ManageCourseResponse> manageCourseResponse;
-    Integer productCurrentPage;
-    Integer productTotalPage;
+    private List<ManageCourseResponse> manageCourseResponse;
+    private Integer productCurrentPage;
+    private Integer productTotalPage;
 }

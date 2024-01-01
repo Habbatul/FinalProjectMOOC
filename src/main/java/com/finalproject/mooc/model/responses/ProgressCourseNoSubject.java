@@ -2,19 +2,17 @@ package com.finalproject.mooc.model.responses;
 
 import com.finalproject.mooc.enums.CourseCategory;
 import com.finalproject.mooc.enums.CourseLevel;
-import com.finalproject.mooc.enums.TypePremium;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class ProgressCourseNoSubject {
+
     private String teacher;
     private String courseCode;
     private String courseName;

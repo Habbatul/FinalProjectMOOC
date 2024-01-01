@@ -8,12 +8,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class OrderHistoryResponse {
+
     private String courseCode;
     private String courseName;
     private CourseCategory courseCategory;

@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class ProgressSubjectDetail {
+
     private String subjectCode;
     private String title;
     private String url;
