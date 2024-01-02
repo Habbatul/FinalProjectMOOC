@@ -63,12 +63,7 @@ public class WebConfiguration {
                                 "PUT /verify-account<br>" +
                                 "PUT /forget-password/reset<br>" +
                                 "GET /course-detail<br>" +
-                                "GET /course<br>" +
-                                "<br><br>Kunjungi beberapa URL di bawah ini untuk portofolio/proyek saya lainnya:" +
-                                "<ul>" +
-                                "<li>[Portofolio Website](https://hq.achmodez.tech)</li>" +
-                                "<li>[Linkedin Profile](https://www.linkedin.com/in/habbatul/)</li>" +
-                                "<ul>")
+                                "GET /course<br>")
                         .version("1.0.0"))
                 .components(new Components().addSecuritySchemes("Authorization", securityScheme))
                 .addSecurityItem(securityRequirement);
