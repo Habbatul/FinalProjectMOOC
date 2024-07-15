@@ -33,7 +33,7 @@ The technologies we used in developing this web application are as follows:
 - SMTP Gmail
 
 ## Challange Score
-My independent study scores on each chapter (Challange and Final Project) are shown in <a href="Final Report Scale 1-100 BEJ Habbatul Qolbi H.pdf">this page</a>.
+My independent study scores on each chapter (Challange and Final Project) are shown in <a href="https://github.com/Habbatul/BinarFud/blob/Main/Final%20Report%20Scale%201-100%20BEJ%20Habbatul%20Qolbi%20H.pdf">this page</a>.
 
 ## System Design (Deployment)
 <img src="System Design Final Proyek.png">
