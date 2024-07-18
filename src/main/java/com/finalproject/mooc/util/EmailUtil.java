@@ -1,6 +1,7 @@
 package com.finalproject.mooc.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
@@ -10,6 +11,9 @@ import javax.mail.internet.MimeMessage;
 
 @Component
 public class EmailUtil {
+
+    @Value("${url.destination}")
+    private String urlDestination;
 
     @Autowired
     private JavaMailSender javaMailSender;
@@ -51,7 +55,7 @@ public class EmailUtil {
 
     public void sendOtpEmailResetPassword(String email, String token) throws MessagingException {
         // nantinya ganti url disini
-        String resetPasswordUrl = "https://mooc.code69.my.id/coba.html?resetToken=" + token;
+        String resetPasswordUrl = urlDestination+"/coba.html?resetToken=" + token;
         String htmlContent =  "<div style=\"font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2\">" +
                 "    <div style=\"margin:50px auto;width:80%%;padding:20px 0\">" +
                 "        <div style=\"border-bottom:5px solid #eee\">" +
