@@ -1,10 +1,12 @@
 package com.finalproject.mooc.security;
 
+import com.finalproject.mooc.enums.ERole;
 import com.finalproject.mooc.service.security.UserDetailsServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -41,7 +43,11 @@ public class WebSecurityConfig {
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeHttpRequests()
-                .antMatchers( "/**").permitAll()
+                .antMatchers( "/auth/**", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/webjars/**", "/error").permitAll()
+                .antMatchers(  "/verify-account", "/regenerate-otp", "/forget-password/**").permitAll()
+                .antMatchers("/user/**").hasAuthority(ERole.USER.name())
+                .antMatchers(HttpMethod.GET, "subject/**", "/course/**", "/course-detail", "/course-progress/**", "/order/history").hasAnyAuthority(ERole.USER.name(), ERole.ADMIN.name())
+                .antMatchers("subject/**", "/course/**", "/course-progress/**", "/order/**", "/dashboard-data", "/admin/**").hasAuthority(ERole.ADMIN.name())
                 .anyRequest()
                 .authenticated()
                 .and()
